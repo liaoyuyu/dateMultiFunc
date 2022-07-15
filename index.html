@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>时间多功能插件</title>
-    <link rel="stylesheet" href="./index.css">
 </head>
+
 <body>
-    <div class="date_multi_popup">
+    <div hidden class="date_multi_popup">
+        <div class="date_multi_bg"></div>
         <div class="date_multi_inner">
             <!-- 按钮区 -->
             <div class="date_multi_title">
@@ -32,6 +35,7 @@
                     <p>周五</p>
                     <p>周六</p>
                 </div>
+                <!-- 日期 -->
                 <div class="date_list">
                     <p></p>
                     <p></p>
@@ -72,12 +76,21 @@
         </div>
     </div>
 </body>
+
 </html>
 
 <script type="module">
     import dateMultiFunc from "./dateMultiFunc.js"
-    let obj = new dateMultiFunc();
-    setTimeout(()=>{
+    let obj = new dateMultiFunc({
+        // defaultYears: "2021.6",
+        cancelFunc: () => {
+            console.log("取消")
+        },
+        confirmFunc: (res) => {
+            console.log(res)
+        }
+    });
+    setTimeout(() => {
         obj.show();
-    },1000)
+    }, 1000)
 </script>

@@ -533,24 +533,28 @@ class dateMultiFunc {
         // 判断 当前年月 是否是 选择元素的年月,并且索引对应
         //当前年月
         let { year, month } = this.currYears;
-        if (this.firstTime.length && year == this.firstTime[0] && month == this.firstTime[1] && i == this.select_first.getAttribute("index")) {
-            // 开始选中在其中
-            p.classList.add("select_first");
-            this.select_first = p;//重新赋值，因为已经替换了，它已经是过去的对象了
+        if (this.firstTime.length && year == this.firstTime[0] && month == this.firstTime[1]) {
+            let index = Number(this.select_first.getAttribute("index"))
+            if(i == index){
+                // 开始选中在其中
+                p.classList.add("select_first");
+                this.select_first = p;//重新赋值，因为已经替换了，它已经是过去的对象了
+            }
         }
 
-        if (this.endTime.length && year == this.endTime[0] && month == this.endTime[1] && i == this.select_last.getAttribute("index")) {
-            // 开始选中在其中
-            p.classList.add("select_last");
-            this.select_last = p;//重新赋值，因为已经替换了，它已经是过去的对象了
+        if (this.endTime.length && year == this.endTime[0] && month == this.endTime[1]) {
+            let index = Number(this.select_last.getAttribute("index"))
+            if(i == index){
+                // 结束选中在其中
+                p.classList.add("select_last");
+                this.select_last = p;//重新赋值，因为已经替换了，它已经是过去的对象了
+            }
         }
     }
     // 设置选中区间的过渡样式
     setSectionStyle() {
         // 判断是否 选中了时间
         if (!this.firstTime.length || !this.endTime.length) return;
-
-
 
 
         this.select_period = [];//清空
@@ -561,12 +565,12 @@ class dateMultiFunc {
         let { year, month } = this.currYears;
         if (year == this.firstTime[0] && month == this.firstTime[1]) {
             // 开始选中在当前年月，设置开始索引
-            firstIndex = this.select_first.getAttribute("index");
+            firstIndex = Number(this.select_first.getAttribute("index"));
         }
 
         if (year == this.endTime[0] && month == this.endTime[1]) {
             // 开始选中在当前年月，设置结束索引
-            lastIndex = this.select_last.getAttribute("index");
+            lastIndex = Number(this.select_last.getAttribute("index"));
         }
 
         // 判断是否需要设置选择样式

@@ -374,14 +374,7 @@ class dateMultiFunc {
             
             /* 选中样式 */
             /* 第一个和最后一个 */
-            /* select 单选类 */
-            .date_multi_popup .date_list p.select,
-            .date_multi_popup .date_list p.select_first,
-            .date_multi_popup .date_list p.select_last{
-                color: #fff;
-            }
-            .date_multi_popup .date_list p.select_first::after,
-            .date_multi_popup .date_list p.select_last::after{
+            .date_multi_popup .date_list p.select_firstlast:after{
                 position: absolute;
                 content: "";
                 width: 70%;
@@ -394,10 +387,11 @@ class dateMultiFunc {
                 border-radius: 100%;
                 background-color: #409EFE;
             }
+            .date_multi_popup .date_list p.select_firstlast{
+                color: #fff;
+            }
             /* 范围间样式 */
-            .date_multi_popup .date_list p.select_period::after,
-            .date_multi_popup .date_list p.select_first::before,
-            .date_multi_popup .date_list p.select_last::before{
+            .date_multi_popup .date_list p.select_period::after{
                 position: absolute;
                 content: "";
                 width: 100%;
@@ -408,15 +402,6 @@ class dateMultiFunc {
                 left: 0;
                 z-index: -2;
                 background-color: #A0CFFF;
-            }
-            .date_multi_popup .date_list p.select_first::before{
-                width: 50%;
-                left: 50%;
-            }
-            .date_multi_popup .date_list p.select_last::before{
-                width: 50%;
-                left: auto;
-                right: 50%;
             }
         `
         let style = document.createElement('style');
@@ -496,7 +481,7 @@ class dateMultiFunc {
         if (!this.firstTime.length) {
             // 给点击元素添加第一次类
             this.select_first = e.target;
-            this.select_first.classList.add("select_first");
+            this.select_first.classList.add("select_firstlast");
             let day = e.target.innerText;
             this.firstTime = [year, month, day];
             return;
@@ -506,7 +491,7 @@ class dateMultiFunc {
         if (!this.endTime.length) {
             // 给点击元素添加最后类
             this.select_last = e.target;
-            this.select_last.classList.add("select_last");
+            this.select_last.classList.add("select_firstlast");
             let day = e.target.innerText;
             this.endTime = [year, month, day];
             // 设置选中区间的过渡样式
@@ -518,13 +503,13 @@ class dateMultiFunc {
         // 清空 选中过渡
         this.cleanSelectPeriod();
         // 移除之前的
-        this.select_first.classList.remove("select_first");
-        this.select_last.classList.remove("select_last");
+        this.select_first.classList.remove("select_firstlast");
+        this.select_last.classList.remove("select_firstlast");
         this.endTime = [];
 
         // 给点击元素添加第一次类
         this.select_first = e.target;
-        this.select_first.classList.add("select_first");
+        this.select_first.classList.add("select_firstlast");
         let day = e.target.innerText;
         this.firstTime = [year, month, day];
     }
@@ -537,7 +522,7 @@ class dateMultiFunc {
             let index = Number(this.select_first.getAttribute("index"))
             if(i == index){
                 // 开始选中在其中
-                p.classList.add("select_first");
+                p.classList.add("select_firstlast");
                 this.select_first = p;//重新赋值，因为已经替换了，它已经是过去的对象了
             }
         }
@@ -546,7 +531,7 @@ class dateMultiFunc {
             let index = Number(this.select_last.getAttribute("index"))
             if(i == index){
                 // 结束选中在其中
-                p.classList.add("select_last");
+                p.classList.add("select_firstlast");
                 this.select_last = p;//重新赋值，因为已经替换了，它已经是过去的对象了
             }
         }
@@ -560,40 +545,42 @@ class dateMultiFunc {
         this.select_period = [];//清空
         let firstIndex = -1;//开始索引
         let lastIndex = -1;//结束索引
+        let { year, month } = this.currYears;//当前年月
+
         // 判断 当前年月 是否是 选择元素的年月
-        //当前年月
-        let { year, month } = this.currYears;
         if (year == this.firstTime[0] && month == this.firstTime[1]) {
             // 开始选中在当前年月，设置开始索引
             firstIndex = Number(this.select_first.getAttribute("index"));
         }
 
         if (year == this.endTime[0] && month == this.endTime[1]) {
-            // 开始选中在当前年月，设置结束索引
+            // 结束选中在当前年月，设置结束索引
             lastIndex = Number(this.select_last.getAttribute("index"));
         }
 
         // 判断是否需要设置选择样式
-        if (firstIndex < 0 && lastIndex < 0) return;
+        // if (firstIndex < 0 && lastIndex < 0){
+        //     return
+        // }
 
-        // 判断 是否是 反选的（第二次点的前面的日期）
-        // 还要判断 开始年月 是否 比 结束年月 大（大也说明是反选）
-        if (firstIndex > lastIndex || this.firstTime[0] > this.endTime[0] || (this.firstTime[0] == this.endTime[0] && this.firstTime[1] > this.endTime[1])) {
-            // 重新 赋值取反
-            let item = this.firstTime;
-            this.firstTime = this.endTime;
-            this.endTime = item;
+        // // 判断 是否是 反选的（第二次点的前面的日期）
+        // // 还要判断 开始年月 是否 比 结束年月 大（大也说明是反选）
+        // if (firstIndex > lastIndex || this.firstTime[0] > this.endTime[0] || (this.firstTime[0] == this.endTime[0] && this.firstTime[1] > this.endTime[1])) {
+        //     // 重新 赋值取反
+        //     let item = this.firstTime;
+        //     this.firstTime = this.endTime;
+        //     this.endTime = item;
 
-            item = this.select_first;
-            this.select_first = this.select_last;
-            this.select_last = item;
-            this.select_first.className = "select_first"
-            this.select_last.className = "select_last"
+        //     item = this.select_first;
+        //     this.select_first = this.select_last;
+        //     this.select_last = item;
+        //     this.select_first.className = "select_firstlast"
+        //     this.select_last.className = "select_firstlast"
 
-            item = firstIndex;
-            firstIndex = lastIndex;
-            lastIndex = item;
-        }
+        //     item = firstIndex;
+        //     firstIndex = lastIndex;
+        //     lastIndex = item;
+        // }
 
         // 需要设置样式
         let forIndex = 0;//循环次数

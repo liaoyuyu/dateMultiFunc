@@ -13,6 +13,8 @@ class dateMultiFunc {
             backFormat: ".",//返回格式(默认 . 分割)
             defaultYears: "",//默认打开显示的年月(正常时间)  2022.07  2022-7-25  2022/7/2 10:00 或者 Date 时间
             isShow: false,//是否显示
+            position: "bottom",//位置,默认底部 值：center top bottom
+            radius: 0,//圆角
             ...options
         }
         this.currYears = {};//当前显示的年月
@@ -143,110 +145,13 @@ class dateMultiFunc {
         // 清楚 多余赋值
         this.clear();
     }
+    // 清楚
     clear() {
         this.firstTime = [];//开始时间 年月日 [2022,7,5]
         this.endTime = [];//结束时间 年月日 [2022,7,5]
         this.select_first = "";//选中的开始对象
         this.select_last = "";//选中的结束对象
         this.select_period = [];// 范围区间的过渡对象
-    }
-    // 获取 年 月 日 天数 1号位置
-    getYearsDay(time) {
-        // 默认当前月
-        let showTiem = new Date();
-
-        // 判断是否 传了 时间
-        if (time) {
-            showTiem = new Date(time);
-        } else {
-            // 判断是否 设置了 默认打开时间
-            if (this.options.defaultYears) {
-                try {
-                    showTiem = new Date(this.options.defaultYears);
-                } catch (err) {
-                    console.error("时间格式错误")
-                }
-            }
-        }
-
-        let year = showTiem.getFullYear(); //获取完整的年份
-        let month = showTiem.getMonth() + 1; //获取当前月份(0-11,0代表1月),+1,1月就是1
-        let today = showTiem.getDate(); //获取当前日(1-31)
-        let currweek = showTiem.getDay(); //获取当前星期X(0-6,0代表星期天)
-
-        // 0 代表 前一天
-        let days = new Date(year, month, 0).getDate();//天数 这里 month :代表下一个月,下一个月的前一天
-        let oneweek = new Date(year, month - 1, 1).getDay();//当前月1号星期(用于前面站位)
-
-        // 保存当前时间
-        this.currYears = { year, month, today, currweek, days, oneweek };
-        return this.currYears
-    }
-    // 生成 周期 元素
-    createDateWeek() {
-        let date_week = document.createElement("div");
-        date_week.className = "date_week";
-        for (let i = 1; i <= 7; i++) {
-            let p = document.createElement("span");
-            let inner = "周日"
-            switch (i) {
-                case 1://周日
-                    inner = "周日"
-                    break;
-                case 2://周一
-                    inner = "周一"
-                    break;
-                case 3://周二
-                    inner = "周二"
-                    break;
-                case 4://周三
-                    inner = "周三"
-                    break;
-                case 5://周四
-                    inner = "周四"
-                    break;
-                case 6://周五
-                    inner = "周五"
-                    break;
-                case 7://周六
-                    inner = "周六"
-                    break;
-            }
-            p.innerHTML = inner;
-            date_week.append(p)
-        }
-        return date_week;
-    }
-    // 生成 时间列表
-    createDateList(time) {
-        let date_list = document.createElement("div");
-        date_list.className = "date_list";
-
-        let { days, oneweek } = this.getYearsDay(time);
-
-        // 循环次数 = 当前天数 + 1号星期(前面空白站位)
-        let num = days + oneweek;
-        for (let i = 0; i < num; i++) {
-            let p = document.createElement("p");
-            // 在1号位置 开始塞入日期
-            if (i >= oneweek) {
-                p.innerHTML = i - oneweek + 1;
-                // 设置 开始选中 结束选中样式
-                this.setFirstEndStyle(p, i);
-                // 添加点击事件
-                p.addEventListener("click", (e) => {
-                    this.dateClick(e)
-                }, false)
-            }
-            // 添加索引
-            p.setAttribute("index", i);
-            date_list.append(p);
-        }
-        // 塞入
-        this.dateMultiEles.date_multi_con.append(date_list);
-        this.dateMultiEles['date_list'] = date_list;//保存
-        // 设置选择过渡样式
-        this.setSectionStyle();
     }
     // 生成 css 样式
     createdCss() {
@@ -265,6 +170,10 @@ class dateMultiFunc {
                 color: #333333;
                 top: 0;
                 left: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: center;
                 transition: all 0.2s;
                 opacity: 0;
                 visibility: hidden;
@@ -282,15 +191,13 @@ class dateMultiFunc {
                 height: 100%;
             }
             .date_multi_popup .date_multi_inner{
-                position: absolute;
-                bottom: 0;
-                left: 0;
+                position: relative;
                 z-index: 5;
                 width: 100%;
                 background-color: #fff;
                 min-height: 20%;
                 padding-top: 6px;
-                transition: all 0.3s 0.2s ease-out;
+                transition: all 0.3s 0.2s;
                 transform: translateY(100%);
             }
             .date_multi_show .date_multi_inner{
@@ -435,6 +342,29 @@ class dateMultiFunc {
                 left:auto;
             }
         `
+
+        // 设置 参数样式
+        let optionsCss = `
+            /* 圆角 数组就用数组圆角  不是数组就用 上面圆角*/
+            .date_multi_popup .date_multi_inner{
+                border-radius:${this.options.radius.length ? `${this.options.radius.join("px ")}px` : `${this.options.radius}px ${this.options.radius}px 0 0`};
+            }
+            /* 位置*/
+            .date_multi_popup{
+                ${this.options.position == "top" ? `justify-content: flex-start` :
+                this.options.position == "center" ? `justify-content: center` : ''}
+            }
+            .date_multi_popup .date_multi_inner{
+                transform: translateY(${this.options.position == "top" ? `-100%` : this.options.position == "center" ? '50%' : '100%'});
+            }
+            .date_multi_show .date_multi_inner{
+                transform: translateY(0);
+            }
+        `
+
+        css = css + optionsCss;
+
+
         let style = document.createElement('style');
         style.type = 'text/css';
         if (style.styleSheet) {
@@ -443,6 +373,104 @@ class dateMultiFunc {
             style.appendChild(document.createTextNode(css));
         }
         document.head.appendChild(style);
+    }
+    // 获取 年 月 日 天数 1号位置
+    getYearsDay(time) {
+        // 默认当前月
+        let showTiem = new Date();
+
+        // 判断是否 传了 时间
+        if (time) {
+            showTiem = new Date(time);
+        } else {
+            // 判断是否 设置了 默认打开时间
+            if (this.options.defaultYears) {
+                try {
+                    showTiem = new Date(this.options.defaultYears);
+                } catch (err) {
+                    console.error("时间格式错误")
+                }
+            }
+        }
+
+        let year = showTiem.getFullYear(); //获取完整的年份
+        let month = showTiem.getMonth() + 1; //获取当前月份(0-11,0代表1月),+1,1月就是1
+        let today = showTiem.getDate(); //获取当前日(1-31)
+        let currweek = showTiem.getDay(); //获取当前星期X(0-6,0代表星期天)
+
+        // 0 代表 前一天
+        let days = new Date(year, month, 0).getDate();//天数 这里 month :代表下一个月,下一个月的前一天
+        let oneweek = new Date(year, month - 1, 1).getDay();//当前月1号星期(用于前面站位)
+
+        // 保存当前时间
+        this.currYears = { year, month, today, currweek, days, oneweek };
+        return this.currYears
+    }
+    // 生成 周期 元素
+    createDateWeek() {
+        let date_week = document.createElement("div");
+        date_week.className = "date_week";
+        for (let i = 1; i <= 7; i++) {
+            let p = document.createElement("span");
+            let inner = "周日"
+            switch (i) {
+                case 1://周日
+                    inner = "周日"
+                    break;
+                case 2://周一
+                    inner = "周一"
+                    break;
+                case 3://周二
+                    inner = "周二"
+                    break;
+                case 4://周三
+                    inner = "周三"
+                    break;
+                case 5://周四
+                    inner = "周四"
+                    break;
+                case 6://周五
+                    inner = "周五"
+                    break;
+                case 7://周六
+                    inner = "周六"
+                    break;
+            }
+            p.innerHTML = inner;
+            date_week.append(p)
+        }
+        return date_week;
+    }
+    // 生成 时间列表
+    createDateList(time) {
+        let date_list = document.createElement("div");
+        date_list.className = "date_list";
+
+        let { days, oneweek } = this.getYearsDay(time);
+
+        // 循环次数 = 当前天数 + 1号星期(前面空白站位)
+        let num = days + oneweek;
+        for (let i = 0; i < num; i++) {
+            let p = document.createElement("p");
+            // 在1号位置 开始塞入日期
+            if (i >= oneweek) {
+                p.innerHTML = i - oneweek + 1;
+                // 设置 开始选中 结束选中样式
+                this.setFirstEndStyle(p, i);
+                // 添加点击事件
+                p.addEventListener("click", (e) => {
+                    this.dateClick(e)
+                }, false)
+            }
+            // 添加索引
+            p.setAttribute("index", i);
+            date_list.append(p);
+        }
+        // 塞入
+        this.dateMultiEles.date_multi_con.append(date_list);
+        this.dateMultiEles['date_list'] = date_list;//保存
+        // 设置选择过渡样式
+        this.setSectionStyle();
     }
 
     // 初始化事件

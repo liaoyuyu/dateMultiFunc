@@ -10,6 +10,7 @@ class dateMultiFunc {
             cancelFunc: () => { },//取消回调
             confirmText: "确认",//确认按钮文案
             confirmFunc: () => { },//确认回调
+            backFormat: ".",//返回格式(默认 . 分割)
             defaultYears: "",//默认打开显示的年月(正常时间)  2022.07  2022-7-25  2022/7/2 10:00 或者 Date 时间
             isShow: false,//是否显示
             ...options
@@ -118,6 +119,12 @@ class dateMultiFunc {
     }
     // 显示
     show() {
+        // 清楚 多余类
+        let date_list = this.dateMultiEles.date_list.children;
+        for (let i = 0; i < date_list.length; i++) {
+            date_list[i].className = "";
+        }
+
         this.options.isShow = true;
         if (this.dateMultiEles['date_multi_popup']) {
             this.dateMultiEles['date_multi_popup'].classList.add("date_multi_show");
@@ -132,7 +139,16 @@ class dateMultiFunc {
             // 通知取消
             this.options.cancelFunc();
         }
-        document.body.style.overflow = "block"
+        document.body.style.overflow = "block";
+        // 清楚 多余赋值
+        this.clear();
+    }
+    clear() {
+        this.firstTime = [];//开始时间 年月日 [2022,7,5]
+        this.endTime = [];//结束时间 年月日 [2022,7,5]
+        this.select_first = "";//选中的开始对象
+        this.select_last = "";//选中的结束对象
+        this.select_period = [];// 范围区间的过渡对象
     }
     // 获取 年 月 日 天数 1号位置
     getYearsDay(time) {
@@ -373,8 +389,8 @@ class dateMultiFunc {
             }
             
             /* 选中样式 */
-            /* 第一个和最后一个 */
-            .date_multi_popup .date_list p.select_firstlast:after{
+            /* 第一个和最后一个 圆样式*/
+            .date_multi_popup .date_list p.select_firstlast:before{
                 position: absolute;
                 content: "";
                 width: 70%;
@@ -391,7 +407,9 @@ class dateMultiFunc {
                 color: #fff;
             }
             /* 范围间样式 */
-            .date_multi_popup .date_list p.select_period::after{
+            .date_multi_popup .date_list p.select_period::after,
+            .date_multi_popup .date_list p.select_firstlast::after
+            {
                 position: absolute;
                 content: "";
                 width: 100%;
@@ -402,6 +420,19 @@ class dateMultiFunc {
                 left: 0;
                 z-index: -2;
                 background-color: #A0CFFF;
+            }
+            .date_multi_popup .date_list p.select_firstlast::after{
+                width: 50%;
+                opacity: 0;
+            }
+            /* 闭合样式 */
+            .date_multi_popup .date_list p.select_first::after,
+            .date_multi_popup .date_list p.select_last::after{
+                opacity: 1;
+            }
+            .date_multi_popup .date_list p.select_first::after{
+                right:0;
+                left:auto;
             }
         `
         let style = document.createElement('style');
@@ -443,8 +474,30 @@ class dateMultiFunc {
         // 判断是否选择了日期
         if (!this.firstTime.length) return;
 
+        // 判断是否有结束时间，没有结束时间，把开始赋值给结束
+        if (!this.endTime.length) {
+            this.endTime = this.firstTime;
+        }
+
+        // 回调参数
+        let options = {
+            firstTime: {
+                year: this.firstTime[0],//年
+                month: this.firstTime[1],//月
+                day: this.firstTime[2],//日
+                time: this.firstTime.join(this.options.backFormat),//时间字符串
+            },
+            endTime: {
+                year: this.endTime[0],//年
+                month: this.endTime[1],//月
+                day: this.endTime[2],//日
+                time: this.endTime.join(this.options.backFormat)
+            }
+        }
         // 回调
-        this.options.confirmFunc(111);
+        this.options.confirmFunc(options);
+        // 关闭
+        this.close();
     }
     // 上一月 下一月 点击 type:false 上一月
     prevNextMonthFunc(type) {
@@ -482,7 +535,7 @@ class dateMultiFunc {
             // 给点击元素添加第一次类
             this.select_first = e.target;
             this.select_first.classList.add("select_firstlast");
-            let day = e.target.innerText;
+            let day = Number(e.target.innerText);
             this.firstTime = [year, month, day];
             return;
         }
@@ -492,10 +545,10 @@ class dateMultiFunc {
             // 给点击元素添加最后类
             this.select_last = e.target;
             this.select_last.classList.add("select_firstlast");
-            let day = e.target.innerText;
+            let day = Number(e.target.innerText);
             this.endTime = [year, month, day];
-            // 设置选中区间的过渡样式
-            this.setSectionStyle();
+            // 判断 开始和结束 是否取反(结束时间比开始时间小)
+            this.isTimeReverse();
             return;
         }
 
@@ -503,24 +556,48 @@ class dateMultiFunc {
         // 清空 选中过渡
         this.cleanSelectPeriod();
         // 移除之前的
-        this.select_first.classList.remove("select_firstlast");
-        this.select_last.classList.remove("select_firstlast");
+        this.select_first.className = "";
+        this.select_last.className = "";
         this.endTime = [];
 
         // 给点击元素添加第一次类
         this.select_first = e.target;
         this.select_first.classList.add("select_firstlast");
-        let day = e.target.innerText;
+        let day = Number(e.target.innerText);
         this.firstTime = [year, month, day];
     }
-    // 设置 开始选中 结束选中样式
+    // 判断 时间是否选反，选反了就自动回正
+    isTimeReverse() {
+        // 判断 开始年月日 和 结束年月日
+
+        // 需要取反
+        if (this.endTime[0] < this.firstTime[0] || // 结束年份 小于 开始年份
+            (this.endTime[0] == this.firstTime[0] && this.endTime[1] < this.firstTime[1]) || // 年份相同，结束月份 小于 开始月份
+            (this.endTime[0] == this.firstTime[0] && this.endTime[1] == this.firstTime[1] && this.endTime[2] < this.firstTime[2]) // 年月相同，结束日期 小于 开始日期
+        ) {
+            // 需要取反
+            // 时间取反
+            let item = this.firstTime;
+            this.firstTime = this.endTime;
+            this.endTime = item;
+
+            // 元素取反
+            item = this.select_first;
+            this.select_first = this.select_last;
+            this.select_last = item;
+        }
+
+        // 设置选中区间的过渡样式
+        this.setSectionStyle();
+    }
+    // 重新设置 开始选中 结束选中样式
     setFirstEndStyle(p, i) {
         // 判断 当前年月 是否是 选择元素的年月,并且索引对应
         //当前年月
         let { year, month } = this.currYears;
         if (this.firstTime.length && year == this.firstTime[0] && month == this.firstTime[1]) {
             let index = Number(this.select_first.getAttribute("index"))
-            if(i == index){
+            if (i == index) {
                 // 开始选中在其中
                 p.classList.add("select_firstlast");
                 this.select_first = p;//重新赋值，因为已经替换了，它已经是过去的对象了
@@ -529,7 +606,7 @@ class dateMultiFunc {
 
         if (this.endTime.length && year == this.endTime[0] && month == this.endTime[1]) {
             let index = Number(this.select_last.getAttribute("index"))
-            if(i == index){
+            if (i == index) {
                 // 结束选中在其中
                 p.classList.add("select_firstlast");
                 this.select_last = p;//重新赋值，因为已经替换了，它已经是过去的对象了
@@ -538,14 +615,19 @@ class dateMultiFunc {
     }
     // 设置选中区间的过渡样式
     setSectionStyle() {
+        this.select_period = [];//清空
+
         // 判断是否 选中了时间
         if (!this.firstTime.length || !this.endTime.length) return;
 
+        // 判断 开始 和 结束 是否是一个时间
+        if (this.firstTime[0] == this.endTime[0] && this.firstTime[1] == this.endTime[1] && this.firstTime[2] == this.endTime[2]) {
+            return;
+        }
 
-        this.select_period = [];//清空
         let firstIndex = -1;//开始索引
         let lastIndex = -1;//结束索引
-        let { year, month } = this.currYears;//当前年月
+        let { year, month, days, oneweek } = this.currYears;
 
         // 判断 当前年月 是否是 选择元素的年月
         if (year == this.firstTime[0] && month == this.firstTime[1]) {
@@ -558,34 +640,9 @@ class dateMultiFunc {
             lastIndex = Number(this.select_last.getAttribute("index"));
         }
 
-        // 判断是否需要设置选择样式
-        // if (firstIndex < 0 && lastIndex < 0){
-        //     return
-        // }
 
-        // // 判断 是否是 反选的（第二次点的前面的日期）
-        // // 还要判断 开始年月 是否 比 结束年月 大（大也说明是反选）
-        // if (firstIndex > lastIndex || this.firstTime[0] > this.endTime[0] || (this.firstTime[0] == this.endTime[0] && this.firstTime[1] > this.endTime[1])) {
-        //     // 重新 赋值取反
-        //     let item = this.firstTime;
-        //     this.firstTime = this.endTime;
-        //     this.endTime = item;
-
-        //     item = this.select_first;
-        //     this.select_first = this.select_last;
-        //     this.select_last = item;
-        //     this.select_first.className = "select_firstlast"
-        //     this.select_last.className = "select_firstlast"
-
-        //     item = firstIndex;
-        //     firstIndex = lastIndex;
-        //     lastIndex = item;
-        // }
-
-        // 需要设置样式
         let forIndex = 0;//循环次数
         let objele = "";//元素
-        let type = 1;//方向 1:下一个  0:上一个
 
         // 开始 和 结束 在当前月
         if (firstIndex >= 0 && lastIndex >= 0) {
@@ -595,19 +652,25 @@ class dateMultiFunc {
         }
         // 开始 在当前月
         if (firstIndex >= 0 && lastIndex < 0) {
-            // 就循环 开始 到月份最后
-            let days = this.currYears.days;//当前月天数
-            let oneweek = this.currYears.oneweek;//第一天的位置
+            // 就循环 开始 到月份最后(天数 + 第一天的位置 = 总数量)
             forIndex = days + oneweek - firstIndex - 1;
             objele = this.select_first.nextSibling;//第一个的下一个
         }
         // 结束 在当前月
         if (firstIndex < 0 && lastIndex >= 0) {
             // 就循环 第一天位置 到 结束位置
-            let oneweek = this.currYears.oneweek;//第一天的位置
             forIndex = lastIndex - oneweek;
-            objele = this.select_last.previousSibling;//最后个的点一个
-            type = 0;//往上找
+            objele = this.dateMultiEles.date_list.children[oneweek];//1号位置
+        }
+        // 当前月份 在 开始和结束 中
+        if (firstIndex == -1 && lastIndex == -1) {
+            // 判断 当前年月 是否 选择的区间中
+            if (year >= this.firstTime[0] && year <= this.endTime[0] && month >= this.firstTime[1] && month <= this.endTime[1]) {
+                // 在区间中，就当前月1号 到 当前月最后天
+                forIndex = days;
+                // 开始位置，就是 oneweek（1号位置索引）
+                objele = this.dateMultiEles.date_list.children[oneweek];
+            }
         }
 
         for (let i = 0; i < forIndex; i++) {
@@ -615,9 +678,12 @@ class dateMultiFunc {
             objele.className = "select_period";
             // 报错对象
             this.select_period.push(objele);
-            // 判断方向
-            type ? objele = objele.nextSibling : objele = objele.previousSibling
+            objele = objele.nextSibling;
         }
+
+        // 给 开始 和 结束 添加 闭合类
+        this.select_first.classList.add("select_first");
+        this.select_last.classList.add("select_last");
     }
     // 清楚 选中过渡
     cleanSelectPeriod() {
@@ -632,4 +698,4 @@ class dateMultiFunc {
         }
     }
 }
-export default dateMultiFunc;
+// export default dateMultiFunc;

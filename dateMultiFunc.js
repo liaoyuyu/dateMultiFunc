@@ -12,9 +12,14 @@ class dateMultiFunc {
             confirmFunc: () => { },//确认回调
             backFormat: ".",//返回格式(默认 . 分割)
             defaultYears: "",//默认打开显示的年月(正常时间)  2022.07  2022-7-25  2022/7/2 10:00 或者 Date 时间
-            isShow: false,//是否显示
+            // 数字，表示 默认时间的 前后多少年（1表示默认时间的上一年为可选时间范围）
+            // 时间 表示 开始之前结束之后可选，其他不可选
+            // 如果不写，表示为默认时间的前后100年
+            optionalTimeStart:"",// 可选开始时间（同默认时间格式）（可数字，可时间或时间字符串）
+            optionalTimeEnd:"",// 可选结束时间（同默认时间格式）可数字，可时间或时间字符串）
             position: "bottom",//位置,默认底部 值：center top bottom
             radius: 0,//圆角
+            isShow: false,//是否显示
             ...options
         }
         this.currYears = {};//当前显示的年月

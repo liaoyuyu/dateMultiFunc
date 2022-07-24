@@ -386,7 +386,9 @@ class dateMultiFunc {
             // 判断是否 设置了 默认打开时间
             if (this.options.defaultYears) {
                 try {
-                    showTiem = new Date(this.options.defaultYears);
+                    // 把横线转成/线（ios 横线 会 NaN）
+                    showTiem =  this.options.defaultYears.replace(/\-/g, "/");
+                    showTiem = new Date(showTiem);
                 } catch (err) {
                     console.error("时间格式错误")
                 }

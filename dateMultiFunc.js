@@ -5,7 +5,7 @@ class dateMultiFunc {
     constructor(options) {
         this.options = {
             position: "bottom",//位置,默认底部 值：center top bottom
-            radius: 0,//圆角
+            radius: 0,//圆角  数字 或 数组  [0,0,0,0] 同 css border-radius
             selectBg: "#409EFE",//选中的背景颜色
             selectColor: "#ffffff",//选中文字颜色
             tranBg: "#A0CFFF",//过渡背景颜色

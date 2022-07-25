@@ -23,12 +23,15 @@ class dateMultiFunc {
             isShow: false,//是否显示
             ...options
         }
+        this.optionalStart = {};// optionalTimeStart 转换好的时间
+        this.optionalEnd = {};// optionalTimeEnd 装换好的时间
+
         this.currYears = {};//当前显示的年月
-        this.startTime = [];//开始时间 年月日 [2022,7,5]
-        this.endTime = [];//结束时间 年月日 [2022,7,5]
+        this.startTime = [];//选中的开始时间 年月日 [2022,7,5]
+        this.endTime = [];//选中的结束时间 年月日 [2022,7,5]
         this.select_first = "";//选中的开始对象
         this.select_last = "";//选中的结束对象
-        this.select_period = [];// 范围区间的过渡对象
+        this.select_period = [];// 范围区间的过渡对象 合集
 
         this.dateMultiEles = {};//事件插件 元素对象 合集
         // 初始化
@@ -36,6 +39,8 @@ class dateMultiFunc {
     }
     // 初始化
     init() {
+        // 转换 可选时间
+        this.transformOptionaTime();
         // 创建对象
         let date_multi_popup = document.createElement("div");
         date_multi_popup.className = "date_multi_popup";
@@ -301,6 +306,11 @@ class dateMultiFunc {
                 z-index: 2;
                 transition: all 0.1s;
             }
+            /* 不可选样式 */
+            .date_multi_popup .date_list p.on_select{
+                opacity: 0.3;
+                pointer-events: none;
+            }
             
             /* 选中样式 */
             /* 第一个和最后一个 圆样式*/
@@ -381,6 +391,75 @@ class dateMultiFunc {
         }
         document.head.appendChild(style);
     }
+    // 转换 可选时间
+    /* 
+        数字，表示 默认时间的 前后多少年（1表示默认时间的上一年为可选时间范围）
+        0 表示  当前默认时间
+        时间 表示 开始之前结束之后可选，其他不可选
+        如果不写，表示为默认时间的前后100年
+    */
+    transformOptionaTime() {
+        // 默认时间
+        let defaultYears = this.getYearsDay(this.options.defaultYears);
+        // 获取 可选开始 和 可选结束 时间
+        let optionalStart = this.options.optionalTimeStart;
+        let optionalEnd = this.options.optionalTimeEnd;
+
+
+        // 没有 可选开始时间
+        if (optionalStart === "") {
+            // 默认时间 前 100年
+            defaultYears.year = defaultYears.year - 100;
+            optionalStart = defaultYears;
+        } else if (Number(optionalStart) === 0) {
+            // 数字 0 ，当前默认时间
+            optionalStart = defaultYears;
+        } else if (this.isString(optionalStart)) {
+            // 字符串时间
+            optionalStart = this.getYearsDay(optionalStart);
+        } else if (this.isNumber(optionalStart)) {
+            // 整数数字
+            defaultYears.year = defaultYears.year - optionalStart;
+            optionalStart = defaultYears;
+        } else {
+            // 有问题
+            throw "optionalTimeStart 不正确！";
+        }
+
+
+        defaultYears = this.getYearsDay(this.options.defaultYears);
+        // 没有 可选结束时间
+        if (optionalEnd === "") {
+            // 默认时间 前 100年
+            defaultYears.year = defaultYears.year + 100;
+            optionalEnd = defaultYears;
+        } else if (Number(optionalEnd) === 0) {
+            // 数字 0 ，当前默认时间
+            optionalEnd = defaultYears;
+        } else if (this.isString(optionalEnd)) {
+            // 字符串时间
+            optionalEnd = this.getYearsDay(optionalEnd);
+        } else if (this.isNumber(optionalEnd)) {
+            // 整数数字
+            defaultYears.year = defaultYears.year + optionalEnd;
+            optionalEnd = defaultYears;
+        } else {
+            // 有问题
+            throw "optionalTimeEnd 不正确！";
+        }
+
+        // 保存
+        this.optionalStart = optionalStart;
+        this.optionalEnd = optionalEnd;
+    }
+    // 判断是否是 字符串
+    isString(str) {
+        return (typeof str == 'string') && str.constructor == String
+    }
+    // 判断是否是 数字
+    isNumber(num) {
+        return (typeof num == 'number') && num % 1 === 0
+    }
     // 获取 年 月 日 天数 1号位置  isSave:是否保存成 当前时间
     getYearsDay(time, isSave) {
         // 默认当前月
@@ -391,9 +470,15 @@ class dateMultiFunc {
             try {
                 // 把横线转成/线（ios 横线 会 NaN）
                 time = time.replace(/\-/g, "/");
-                showTiem = new Date(time);
+                time = new Date(time);
+                if (time == "Invalid Date") {
+                    // 无效时间
+                    throw err;
+                } else {
+                    showTiem = time
+                }
             } catch (err) {
-                console.error("时间格式错误")
+                throw "时间格式错误"
             }
         }
 
@@ -451,8 +536,27 @@ class dateMultiFunc {
     createDateList() {
         let date_list = document.createElement("div");
         date_list.className = "date_list";
+
         // 当前 时间
-        let { days, oneweek } = this.currYears;
+        let { year, month, days, oneweek } = this.currYears;
+        // 可选范围时间
+        let optionalStart = this.optionalStart;
+        let optionalEnd = this.optionalEnd;
+        let today = 0;//几号
+        let type = 0;  // 1:表示几号之前   2:表示几号几后 
+        // 判断当前时间是否在 可选范围之外
+        if (!(year >= optionalStart.year && month > optionalStart.month)) {
+            // today 之前的时候都不可选
+            type = 1;
+            today = optionalStart.today;
+        }
+
+        if (!(year <= optionalEnd.year && month < optionalEnd.month)) {
+            // today 之后的时间都不可选
+            type = 2;
+            today = optionalEnd.today;
+        }
+
 
         // 循环次数 = 当前天数 + 1号星期(前面空白站位)
         let num = days + oneweek;
@@ -460,13 +564,25 @@ class dateMultiFunc {
             let p = document.createElement("p");
             // 在1号位置 开始塞入日期
             if (i >= oneweek) {
-                p.innerHTML = i - oneweek + 1;
-                // 设置 开始选中 结束选中样式
-                this.setFirstEndStyle(p, i);
-                // 添加点击事件
-                p.addEventListener("click", (e) => {
-                    this.dateClick(e)
-                }, false)
+                let text = i - oneweek + 1;
+                p.innerHTML = text;
+                // 判断 可选范围是否在当前月
+                if (type == 1 && today > text) {
+                    // 可选开始在当前月
+                    p.classList.add("on_select")
+                } else if (type == 2 && today < text) {
+                    // 可选结束在当前月
+                    p.classList.add("on_select")
+                } else {
+                    // 可选
+                    // 设置 开始选中 结束选中样式
+                    this.setFirstEndStyle(p, i);
+                    // 添加点击事件
+                    p.addEventListener("click", (e) => {
+                        this.dateClick(e)
+                    }, false)
+                }
+
             }
             // 添加索引
             p.setAttribute("index", i);
@@ -554,6 +670,26 @@ class dateMultiFunc {
                 year--;
             };
         }
+
+        // 设置按钮状态
+        // 判断 是否在可选时间范围中
+        let optionalStart = this.optionalStart;
+        let optionalEnd = this.optionalEnd;
+        if (!(year >= optionalStart.year && month > optionalStart.month)) {
+            // 前面的时间不可选了
+            this.dateMultiEles.prev_month.style.display = "none";
+        } else {
+            this.dateMultiEles.prev_month.style.display = "block";
+        }
+
+        if (!(year <= optionalEnd.year && month < optionalEnd.month)) {
+            // 后面的时间不可选了
+            this.dateMultiEles.next_month.style.display = "none";
+        } else {
+            this.dateMultiEles.next_month.style.display = "block";
+        }
+
+
         // 保存时间
         this.getYearsDay(`${year}.${month}`, true);
         // 重新生成 列表

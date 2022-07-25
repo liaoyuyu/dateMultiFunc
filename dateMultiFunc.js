@@ -20,6 +20,9 @@ class dateMultiFunc {
             optionalTimeEnd: "",// 可选结束时间（同默认时间格式）可数字，可时间或时间字符串）
             position: "bottom",//位置,默认底部 值：center top bottom
             radius: 0,//圆角
+            selectColor: "#409EFE",//选中颜色
+            tranColor: "#A0CFFF",//过渡颜色
+            selectRadius: 100,//(百分比)选中的开始结束时间 圆角样式
             isShow: false,//是否显示
             ...options
         }
@@ -163,6 +166,11 @@ class dateMultiFunc {
     // 生成 css 样式
     createdCss() {
         let css = `
+            :root {
+                --selectColor: ${this.options.selectColor};
+                --tranColor: ${this.options.tranColor};
+                --selectRadius:${this.options.selectRadius}%;
+            }
             .date_multi_popup,.date_multi_popup *{
                 margin: 0;
                 padding: 0;
@@ -319,8 +327,8 @@ class dateMultiFunc {
                 transform: translateY(-50%);
                 left: 15%;
                 z-index: -1;
-                border-radius: 100%;
-                background-color: #409EFE;
+                border-radius: var(--selectRadius);
+                background-color: var(--selectColor);
             }
             .date_multi_popup .date_list p.select_firstlast{
                 color: #fff;
@@ -338,7 +346,7 @@ class dateMultiFunc {
                 transform: translateY(-50%);
                 left: 0;
                 z-index: -2;
-                background-color: #A0CFFF;
+                background-color: var(--tranColor);
             }
             .date_multi_popup .date_list p.select_firstlast::after{
                 width: 50%;

@@ -13,18 +13,18 @@ class dateMultiFunc {
             backFormat: ".",//返回格式(默认 . 分割)
             defaultYears: "",//默认打开显示的年月(正常时间)  2022.07  2022-7-25  2022/7/2 10:00 或者 Date 时间
             // 数字，表示 默认时间的 前后多少年（1表示默认时间的上一年为可选时间范围）
-            // 0 表示  默认时间
+            // 0 表示  当前默认时间
             // 时间 表示 开始之前结束之后可选，其他不可选
             // 如果不写，表示为默认时间的前后100年
-            optionalTimeStart:"",// 可选开始时间（同默认时间格式）（可数字，可时间或时间字符串）
-            optionalTimeEnd:"",// 可选结束时间（同默认时间格式）可数字，可时间或时间字符串）
+            optionalTimeStart: "",// 可选开始时间（同默认时间格式）（可数字，可时间或时间字符串）
+            optionalTimeEnd: "",// 可选结束时间（同默认时间格式）可数字，可时间或时间字符串）
             position: "bottom",//位置,默认底部 值：center top bottom
             radius: 0,//圆角
             isShow: false,//是否显示
             ...options
         }
         this.currYears = {};//当前显示的年月
-        this.firstTime = [];//开始时间 年月日 [2022,7,5]
+        this.startTime = [];//开始时间 年月日 [2022,7,5]
         this.endTime = [];//结束时间 年月日 [2022,7,5]
         this.select_first = "";//选中的开始对象
         this.select_last = "";//选中的结束对象
@@ -73,7 +73,8 @@ class dateMultiFunc {
         date_multi_time.className = "date_multi_title date_multi_time";
         // 时间选择 年月标题
         let time_tit = document.createElement("p");
-        let time = this.getYearsDay();
+        // 获取时间，并保存
+        let time = this.getYearsDay(this.options.defaultYears, true);
         time_tit.innerHTML = time.year + "年" + time.month + "日"
         // 塞入 时间 和 按钮
         let prev_month = document.createElement("span");//上月
@@ -153,7 +154,7 @@ class dateMultiFunc {
     }
     // 清楚
     clear() {
-        this.firstTime = [];//开始时间 年月日 [2022,7,5]
+        this.startTime = [];//开始时间 年月日 [2022,7,5]
         this.endTime = [];//结束时间 年月日 [2022,7,5]
         this.select_first = "";//选中的开始对象
         this.select_last = "";//选中的结束对象
@@ -380,24 +381,19 @@ class dateMultiFunc {
         }
         document.head.appendChild(style);
     }
-    // 获取 年 月 日 天数 1号位置
-    getYearsDay(time) {
+    // 获取 年 月 日 天数 1号位置  isSave:是否保存成 当前时间
+    getYearsDay(time, isSave) {
         // 默认当前月
         let showTiem = new Date();
 
         // 判断是否 传了 时间
         if (time) {
-            showTiem = new Date(time);
-        } else {
-            // 判断是否 设置了 默认打开时间
-            if (this.options.defaultYears) {
-                try {
-                    // 把横线转成/线（ios 横线 会 NaN）
-                    showTiem =  this.options.defaultYears.replace(/\-/g, "/");
-                    showTiem = new Date(showTiem);
-                } catch (err) {
-                    console.error("时间格式错误")
-                }
+            try {
+                // 把横线转成/线（ios 横线 会 NaN）
+                time = time.replace(/\-/g, "/");
+                showTiem = new Date(time);
+            } catch (err) {
+                console.error("时间格式错误")
             }
         }
 
@@ -410,9 +406,11 @@ class dateMultiFunc {
         let days = new Date(year, month, 0).getDate();//天数 这里 month :代表下一个月,下一个月的前一天
         let oneweek = new Date(year, month - 1, 1).getDay();//当前月1号星期(用于前面站位)
 
-        // 保存当前时间
-        this.currYears = { year, month, today, currweek, days, oneweek };
-        return this.currYears
+        // 判断是否保存当前时间
+        if (isSave) {
+            this.currYears = { year, month, today, currweek, days, oneweek };
+        }
+        return { year, month, today, currweek, days, oneweek }
     }
     // 生成 周期 元素
     createDateWeek() {
@@ -450,11 +448,11 @@ class dateMultiFunc {
         return date_week;
     }
     // 生成 时间列表
-    createDateList(time) {
+    createDateList() {
         let date_list = document.createElement("div");
         date_list.className = "date_list";
         // 当前 时间
-        let { days, oneweek } = this.getYearsDay(time);
+        let { days, oneweek } = this.currYears;
 
         // 循环次数 = 当前天数 + 1号星期(前面空白站位)
         let num = days + oneweek;
@@ -508,20 +506,20 @@ class dateMultiFunc {
     // 确认按钮点击事件
     confirmFunc() {
         // 判断是否选择了日期
-        if (!this.firstTime.length) return;
+        if (!this.startTime.length) return;
 
         // 判断是否有结束时间，没有结束时间，把开始赋值给结束
         if (!this.endTime.length) {
-            this.endTime = this.firstTime;
+            this.endTime = this.startTime;
         }
 
         // 回调参数
         let options = {
-            firstTime: {
-                year: this.firstTime[0],//年
-                month: this.firstTime[1],//月
-                day: this.firstTime[2],//日
-                time: this.firstTime.join(this.options.backFormat),//时间字符串
+            startTime: {
+                year: this.startTime[0],//年
+                month: this.startTime[1],//月
+                day: this.startTime[2],//日
+                time: this.startTime.join(this.options.backFormat),//时间字符串
             },
             endTime: {
                 year: this.endTime[0],//年
@@ -556,9 +554,11 @@ class dateMultiFunc {
                 year--;
             };
         }
+        // 保存时间
+        this.getYearsDay(`${year}.${month}`, true);
         // 重新生成 列表
         this.dateMultiEles.date_list.remove();//删除
-        this.createDateList(`${year}.${month}`);
+        this.createDateList();
         // 修改标题
         this.dateMultiEles.time_tit.innerHTML = year + "年" + month + "日";
     }
@@ -567,12 +567,12 @@ class dateMultiFunc {
         //当前年月
         let { year, month } = this.currYears;
         // 判断 是否是第一次点击
-        if (!this.firstTime.length) {
+        if (!this.startTime.length) {
             // 给点击元素添加第一次类
             this.select_first = e.target;
             this.select_first.classList.add("select_firstlast");
             let day = Number(e.target.innerText);
-            this.firstTime = [year, month, day];
+            this.startTime = [year, month, day];
             return;
         }
 
@@ -600,21 +600,21 @@ class dateMultiFunc {
         this.select_first = e.target;
         this.select_first.classList.add("select_firstlast");
         let day = Number(e.target.innerText);
-        this.firstTime = [year, month, day];
+        this.startTime = [year, month, day];
     }
     // 判断 时间是否选反，选反了就自动回正
     isTimeReverse() {
         // 判断 开始年月日 和 结束年月日
 
         // 需要取反
-        if (this.endTime[0] < this.firstTime[0] || // 结束年份 小于 开始年份
-            (this.endTime[0] == this.firstTime[0] && this.endTime[1] < this.firstTime[1]) || // 年份相同，结束月份 小于 开始月份
-            (this.endTime[0] == this.firstTime[0] && this.endTime[1] == this.firstTime[1] && this.endTime[2] < this.firstTime[2]) // 年月相同，结束日期 小于 开始日期
+        if (this.endTime[0] < this.startTime[0] || // 结束年份 小于 开始年份
+            (this.endTime[0] == this.startTime[0] && this.endTime[1] < this.startTime[1]) || // 年份相同，结束月份 小于 开始月份
+            (this.endTime[0] == this.startTime[0] && this.endTime[1] == this.startTime[1] && this.endTime[2] < this.startTime[2]) // 年月相同，结束日期 小于 开始日期
         ) {
             // 需要取反
             // 时间取反
-            let item = this.firstTime;
-            this.firstTime = this.endTime;
+            let item = this.startTime;
+            this.startTime = this.endTime;
             this.endTime = item;
 
             // 元素取反
@@ -631,7 +631,7 @@ class dateMultiFunc {
         // 判断 当前年月 是否是 选择元素的年月,并且索引对应
         //当前年月
         let { year, month } = this.currYears;
-        if (this.firstTime.length && year == this.firstTime[0] && month == this.firstTime[1]) {
+        if (this.startTime.length && year == this.startTime[0] && month == this.startTime[1]) {
             let index = Number(this.select_first.getAttribute("index"))
             if (i == index) {
                 // 开始选中在其中
@@ -654,10 +654,10 @@ class dateMultiFunc {
         this.select_period = [];//清空
 
         // 判断是否 选中了时间
-        if (!this.firstTime.length || !this.endTime.length) return;
+        if (!this.startTime.length || !this.endTime.length) return;
 
         // 判断 开始 和 结束 是否是一个时间
-        if (this.firstTime[0] == this.endTime[0] && this.firstTime[1] == this.endTime[1] && this.firstTime[2] == this.endTime[2]) {
+        if (this.startTime[0] == this.endTime[0] && this.startTime[1] == this.endTime[1] && this.startTime[2] == this.endTime[2]) {
             return;
         }
 
@@ -666,7 +666,7 @@ class dateMultiFunc {
         let { year, month, days, oneweek } = this.currYears;
 
         // 判断 当前年月 是否是 选择元素的年月
-        if (year == this.firstTime[0] && month == this.firstTime[1]) {
+        if (year == this.startTime[0] && month == this.startTime[1]) {
             // 开始选中在当前年月，设置开始索引
             firstIndex = Number(this.select_first.getAttribute("index"));
         }
@@ -701,7 +701,7 @@ class dateMultiFunc {
         // 当前月份 在 开始和结束 中
         if (firstIndex == -1 && lastIndex == -1) {
             // 判断 当前年月 是否 选择的区间中
-            if (year >= this.firstTime[0] && year <= this.endTime[0] && month >= this.firstTime[1] && month <= this.endTime[1]) {
+            if (year >= this.startTime[0] && year <= this.endTime[0] && month >= this.startTime[1] && month <= this.endTime[1]) {
                 // 在区间中，就当前月1号 到 当前月最后天
                 forIndex = days;
                 // 开始位置，就是 oneweek（1号位置索引）

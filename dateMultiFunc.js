@@ -4,6 +4,15 @@ class dateMultiFunc {
     // options 参数 {}
     constructor(options) {
         this.options = {
+            position: "bottom",//位置,默认底部 值：center top bottom
+            radius: 0,//圆角
+            selectBg: "#409EFE",//选中的背景颜色
+            selectColor: "#ffffff",//选中文字颜色
+            tranBg: "#A0CFFF",//过渡背景颜色
+            tranColor: "#ffffff",//过渡文字颜色
+            selectRadius: 100,//(百分比)选中的开始结束时间 圆角样式
+            color: "#333333",//全局文字颜色
+            background: "#ffffff",//背景颜色
             title: "选择时间",//标题
             isCancel: true,//是否显示取消按钮
             cancelText: "取消",//取消按钮文案
@@ -16,18 +25,13 @@ class dateMultiFunc {
             // 0 表示  当前默认时间
             // 时间 表示 开始之前结束之后可选，其他不可选
             // 如果不写，表示为默认时间的前后100年
-            optionalTimeStart: "",// 可选开始时间（同默认时间格式）（可数字，可时间或时间字符串）
-            optionalTimeEnd: "",// 可选结束时间（同默认时间格式）可数字，可时间或时间字符串）
-            position: "bottom",//位置,默认底部 值：center top bottom
-            radius: 0,//圆角
-            selectColor: "#409EFE",//选中颜色
-            tranColor: "#A0CFFF",//过渡颜色
-            selectRadius: 100,//(百分比)选中的开始结束时间 圆角样式
+            minTime: "",// 可选开始时间（同默认时间格式）（可数字，可时间或时间字符串）
+            maxTime: "",// 可选结束时间（同默认时间格式）可数字，可时间或时间字符串）
             isShow: false,//是否显示
             ...options
         }
-        this.optionalStart = {};// optionalTimeStart 转换好的时间
-        this.optionalEnd = {};// optionalTimeEnd 装换好的时间
+        this.optionalStart = {};// minTime 转换好的时间
+        this.optionalEnd = {};// maxTime 装换好的时间
 
         this.currYears = {};//当前显示的年月
         this.startTime = [];//选中的开始时间 年月日 [2022,7,5]
@@ -167,9 +171,13 @@ class dateMultiFunc {
     createdCss() {
         let css = `
             :root {
+                --selectBg: ${this.options.selectBg};
                 --selectColor: ${this.options.selectColor};
+                --tranBg: ${this.options.tranBg};
                 --tranColor: ${this.options.tranColor};
                 --selectRadius:${this.options.selectRadius}%;
+                --color:${this.options.color};
+                --background:${this.options.background}
             }
             .date_multi_popup,.date_multi_popup *{
                 margin: 0;
@@ -182,7 +190,7 @@ class dateMultiFunc {
                 height: 100%;
                 background: rgba(0, 0, 0, 0.7);
                 font-size: 13px;
-                color: #333333;
+                color: var(--color);
                 top: 0;
                 left: 0;
                 display: flex;
@@ -209,7 +217,7 @@ class dateMultiFunc {
                 position: relative;
                 z-index: 5;
                 width: 100%;
-                background-color: #fff;
+                background-color: var(--background);
                 min-height: 20%;
                 padding-top: 6px;
                 transition: all 0.3s 0.2s;
@@ -255,7 +263,7 @@ class dateMultiFunc {
                 width: 0;
                 height: 0;
                 border-left: 6px solid transparent;
-                border-right: 6px solid #333;
+                border-right: 6px solid var(--color);
                 border-top: 4px solid transparent;
                 border-bottom: 4px solid transparent;
                 left: 50%;
@@ -264,7 +272,7 @@ class dateMultiFunc {
                 margin-top: -6px;
             }
             .date_multi_popup .date_multi_time span:last-child::after{
-                border-left: 6px solid #333;
+                border-left: 6px solid var(--color);
                 border-right: 6px solid transparent;
             }
             
@@ -328,12 +336,15 @@ class dateMultiFunc {
                 left: 15%;
                 z-index: -1;
                 border-radius: var(--selectRadius);
-                background-color: var(--selectColor);
+                background-color: var(--selectBg);
             }
             .date_multi_popup .date_list p.select_firstlast{
-                color: #fff;
+                color: var(--selectColor);
             }
             /* 范围间样式 */
+            .date_multi_popup .date_list p.select_period{
+                color: var(--tranColor);
+            }
             .date_multi_popup .date_list p.select_period::after,
             .date_multi_popup .date_list p.select_firstlast::after
             {
@@ -346,7 +357,7 @@ class dateMultiFunc {
                 transform: translateY(-50%);
                 left: 0;
                 z-index: -2;
-                background-color: var(--tranColor);
+                background-color: var(--tranBg);
             }
             .date_multi_popup .date_list p.select_firstlast::after{
                 width: 50%;
@@ -405,8 +416,8 @@ class dateMultiFunc {
         // 默认时间
         let defaultYears = this.getYearsDay(this.options.defaultYears);
         // 获取 可选开始 和 可选结束 时间
-        let optionalStart = this.options.optionalTimeStart;
-        let optionalEnd = this.options.optionalTimeEnd;
+        let optionalStart = this.options.minTime;
+        let optionalEnd = this.options.maxTime;
 
 
         // 没有 可选开始时间
@@ -426,7 +437,7 @@ class dateMultiFunc {
                     optionalStart = tiem
                 } else {
                     // 可选开始时间比默认时间大了
-                    throw "optionalTimeStart 时间 比 默认时间 大了！";
+                    throw "minTime 时间 比 默认时间 大了！";
                 }
             } else if (this.isNumber(optionalStart)) {
                 // 整数数字
@@ -434,7 +445,7 @@ class dateMultiFunc {
                 optionalStart = defaultYears;
             } else {
                 // 有问题
-                throw "optionalTimeStart 不正确！";
+                throw "minTime 不正确！";
             }
         } catch (err) {
             throw err;
@@ -460,7 +471,7 @@ class dateMultiFunc {
                     optionalEnd = tiem
                 } else {
                     // 可选开始时间比默认时间小了
-                    throw "optionalTimeEnd 时间 比 默认时间 小了！";
+                    throw "maxTime 时间 比 默认时间 小了！";
                 }
             } else if (this.isNumber(optionalEnd)) {
                 // 整数数字
@@ -468,7 +479,7 @@ class dateMultiFunc {
                 optionalEnd = defaultYears;
             } else {
                 // 有问题
-                throw "optionalTimeEnd 不正确！";
+                throw "maxTime 不正确！";
             }
         } catch (err) {
             throw err;

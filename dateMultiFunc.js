@@ -93,12 +93,6 @@ class dateMultiFunc {
         date_multi_con.className = "date_multi_con";
         // 塞入周期
         date_multi_con.append(this.createDateWeek())
-
-        this.dateMultiEles = {
-            date_multi_con,//内容
-        }
-        // 塞入 时间列表
-        this.createDateList();
         // 塞入内容
         date_multi_inner.append(date_multi_con);
         date_multi_popup.append(date_multi_inner);
@@ -114,6 +108,7 @@ class dateMultiFunc {
             time_tit,//时间标题(年月)
             prev_month,//上月按钮
             next_month,//下月按钮
+            date_multi_con,//内容
             // date_list,//日期列表
         }
         // 合并
@@ -133,11 +128,11 @@ class dateMultiFunc {
     }
     // 显示
     show() {
-        // 清楚 多余类
-        let date_list = this.dateMultiEles.date_list.children;
-        for (let i = 0; i < date_list.length; i++) {
-            date_list[i].className = "";
+        if (this.dateMultiEles.date_list) {
+            this.dateMultiEles.date_list.remove();//删除
         }
+        // 塞入 时间列表
+        this.createDateList();
 
         this.options.isShow = true;
         if (this.dateMultiEles['date_multi_popup']) {
@@ -407,46 +402,70 @@ class dateMultiFunc {
 
 
         // 没有 可选开始时间
-        if (optionalStart === "") {
-            // 默认时间 前 100年
-            defaultYears.year = defaultYears.year - 100;
-            optionalStart = defaultYears;
-        } else if (Number(optionalStart) === 0) {
-            // 数字 0 ，当前默认时间
-            optionalStart = defaultYears;
-        } else if (this.isString(optionalStart)) {
-            // 字符串时间
-            optionalStart = this.getYearsDay(optionalStart);
-        } else if (this.isNumber(optionalStart)) {
-            // 整数数字
-            defaultYears.year = defaultYears.year - optionalStart;
-            optionalStart = defaultYears;
-        } else {
-            // 有问题
-            throw "optionalTimeStart 不正确！";
+        try {
+            if (optionalStart === "") {
+                // 默认时间 前 100年
+                defaultYears.year = defaultYears.year - 100;
+                optionalStart = defaultYears;
+            } else if (Number(optionalStart) === 0) {
+                // 数字 0 ，当前默认时间
+                optionalStart = defaultYears;
+            } else if (this.isString(optionalStart)) {
+                // 字符串时间
+                // 判断 是否比 默认时间 小
+                let tiem = this.getYearsDay(optionalStart);
+                if (tiem.timestamp <= defaultYears.timestamp) {
+                    optionalStart = tiem
+                } else {
+                    // 可选开始时间比默认时间大了
+                    throw "optionalTimeStart 时间 比 默认时间 大了！";
+                }
+            } else if (this.isNumber(optionalStart)) {
+                // 整数数字
+                defaultYears.year = defaultYears.year - optionalStart;
+                optionalStart = defaultYears;
+            } else {
+                // 有问题
+                throw "optionalTimeStart 不正确！";
+            }
+        } catch (err) {
+            throw err;
         }
 
 
-        defaultYears = this.getYearsDay(this.options.defaultYears);
-        // 没有 可选结束时间
-        if (optionalEnd === "") {
-            // 默认时间 前 100年
-            defaultYears.year = defaultYears.year + 100;
-            optionalEnd = defaultYears;
-        } else if (Number(optionalEnd) === 0) {
-            // 数字 0 ，当前默认时间
-            optionalEnd = defaultYears;
-        } else if (this.isString(optionalEnd)) {
-            // 字符串时间
-            optionalEnd = this.getYearsDay(optionalEnd);
-        } else if (this.isNumber(optionalEnd)) {
-            // 整数数字
-            defaultYears.year = defaultYears.year + optionalEnd;
-            optionalEnd = defaultYears;
-        } else {
-            // 有问题
-            throw "optionalTimeEnd 不正确！";
+
+        try {
+            defaultYears = this.getYearsDay(this.options.defaultYears);
+            // 没有 可选结束时间
+            if (optionalEnd === "") {
+                // 默认时间 前 100年
+                defaultYears.year = defaultYears.year + 100;
+                optionalEnd = defaultYears;
+            } else if (Number(optionalEnd) === 0) {
+                // 数字 0 ，当前默认时间
+                optionalEnd = defaultYears;
+            } else if (this.isString(optionalEnd)) {
+                // 字符串时间
+                // 判断 是否比 默认时间 大
+                let tiem = this.getYearsDay(optionalEnd);
+                if (tiem.timestamp >= defaultYears.timestamp) {
+                    optionalEnd = tiem
+                } else {
+                    // 可选开始时间比默认时间小了
+                    throw "optionalTimeEnd 时间 比 默认时间 小了！";
+                }
+            } else if (this.isNumber(optionalEnd)) {
+                // 整数数字
+                defaultYears.year = defaultYears.year + optionalEnd;
+                optionalEnd = defaultYears;
+            } else {
+                // 有问题
+                throw "optionalTimeEnd 不正确！";
+            }
+        } catch (err) {
+            throw err;
         }
+
 
         // 保存
         this.optionalStart = optionalStart;
@@ -486,6 +505,7 @@ class dateMultiFunc {
         let month = showTiem.getMonth() + 1; //获取当前月份(0-11,0代表1月),+1,1月就是1
         let today = showTiem.getDate(); //获取当前日(1-31)
         let currweek = showTiem.getDay(); //获取当前星期X(0-6,0代表星期天)
+        let timestamp = new Date(`${year}.${month}.${today}`).getTime();//当前时间戳(凌晨时间00:00)
 
         // 0 代表 前一天
         let days = new Date(year, month, 0).getDate();//天数 这里 month :代表下一个月,下一个月的前一天
@@ -493,9 +513,9 @@ class dateMultiFunc {
 
         // 判断是否保存当前时间
         if (isSave) {
-            this.currYears = { year, month, today, currweek, days, oneweek };
+            this.currYears = { year, month, today, currweek, days, oneweek, timestamp };
         }
-        return { year, month, today, currweek, days, oneweek }
+        return { year, month, today, currweek, days, oneweek, timestamp }
     }
     // 生成 周期 元素
     createDateWeek() {
@@ -545,16 +565,24 @@ class dateMultiFunc {
         let today = 0;//几号
         let type = 0;  // 1:表示几号之前   2:表示几号几后 
         // 判断当前时间是否在 可选范围之外
-        if (!(year >= optionalStart.year && month > optionalStart.month)) {
+        if (year == optionalStart.year && month == optionalStart.month) {
             // today 之前的时候都不可选
             type = 1;
             today = optionalStart.today;
+            // 前面的时间不可选了
+            this.dateMultiEles.prev_month.style.display = "none";
+        } else {
+            this.dateMultiEles.prev_month.style.display = "block";
         }
 
-        if (!(year <= optionalEnd.year && month < optionalEnd.month)) {
+        if (year == optionalEnd.year && month == optionalEnd.month) {
             // today 之后的时间都不可选
             type = 2;
             today = optionalEnd.today;
+            // 后面的时间不可选了
+            this.dateMultiEles.next_month.style.display = "none";
+        } else {
+            this.dateMultiEles.next_month.style.display = "block";
         }
 
 
@@ -670,25 +698,6 @@ class dateMultiFunc {
                 year--;
             };
         }
-
-        // 设置按钮状态
-        // 判断 是否在可选时间范围中
-        let optionalStart = this.optionalStart;
-        let optionalEnd = this.optionalEnd;
-        if (!(year >= optionalStart.year && month > optionalStart.month)) {
-            // 前面的时间不可选了
-            this.dateMultiEles.prev_month.style.display = "none";
-        } else {
-            this.dateMultiEles.prev_month.style.display = "block";
-        }
-
-        if (!(year <= optionalEnd.year && month < optionalEnd.month)) {
-            // 后面的时间不可选了
-            this.dateMultiEles.next_month.style.display = "none";
-        } else {
-            this.dateMultiEles.next_month.style.display = "block";
-        }
-
 
         // 保存时间
         this.getYearsDay(`${year}.${month}`, true);

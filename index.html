@@ -18,7 +18,8 @@
 
 <script src="./dateMultiFunc.js"></script>
 <script>
-    let obj = new dateMultiFunc({
+
+    let dateMulti = dateMultiFunc({
         minTime: 10,
         maxTime: 0,
         cancelFunc: () => {
@@ -30,24 +31,6 @@
     });
 
     function showTime() {
-        obj.show();
+        dateMulti.show();
     }
 </script>
-
-<!-- <script type="module">
-    import dateMultiFunc from "./dateMultiFunc.js"
-    let obj = new dateMultiFunc({
-        // defaultYears: "2021.6",
-        cancelFunc: () => {
-            console.log("取消")
-        },
-        confirmFunc: (res) => {
-            console.log(res)
-        }
-    });
-    setTimeout(() => {
-        obj.show();
-    }, 1000)
-
-    
-</script> -->

@@ -16,10 +16,10 @@
 
 </html>
 
+<!-- 普通用法 -->
 <script src="./dateMultiFunc.js"></script>
 <script>
-
-    let dateMulti = dateMultiFunc({
+    let aaa = new dateMulti({
         minTime: 10,
         maxTime: 0,
         cancelFunc: () => {
@@ -29,8 +29,7 @@
             console.log(res)
         }
     });
-
     function showTime() {
-        dateMulti.show();
+        aaa.show();
     }
 </script>

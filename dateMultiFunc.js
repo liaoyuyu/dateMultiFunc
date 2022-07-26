@@ -1,6 +1,6 @@
 
 // 时间 选择 插件
-const dateMultiFunc = (function () {
+; (function (undefined) {
     class dateMultiFunc {
         // options 参数 {}
         constructor(options) {
@@ -918,8 +918,9 @@ const dateMultiFunc = (function () {
     }
 
     // 关键代码（单列模型）
-    let dateMulti = null;
-    function cruxFunc(options) {
+    let dateFuncObj = null;
+
+    let dateMulti = function (options) {
         // 没参数
         if (typeof options == "undefined") {
             options = {};
@@ -929,33 +930,41 @@ const dateMultiFunc = (function () {
             throw "参数格式错误！"
         }
 
-        if (dateMulti) {
+        if (dateFuncObj) {
             // 已创建，重新初始化
             // 合并
-            dateMulti.options = {
-                ...dateMulti.options,
+            dateFuncObj.options = {
+                ...dateFuncObj.options,
                 ...options
             }
             // 初始化
-            dateMulti.init();
+            dateFuncObj.init();
         } else {
             // 没创建
-            dateMulti = new dateMultiFunc(options)
+            dateFuncObj = new dateMultiFunc(options)
         }
-
-        return dateMulti;
     }
 
     // 原型链，增加打开方法
-    cruxFunc.show = function () {
-        if (dateMulti) {
-            dateMulti.show();
+    dateMulti.prototype.show = function () {
+        if (dateFuncObj) {
+            dateFuncObj.show();
         } else {
             throw "请先创建！"
         }
     }
 
-    return cruxFunc;
-})()
+    // 全局对象
+    let _global = (function () { return this || (0, eval)('this'); }());
 
-// export default dateMultiFunc;
+
+    // 判断环境
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = dateMulti;
+    } else if (typeof define === "function" && define.amd) {
+        define(function () { return dateMulti; });
+    } else {
+        // 判断 方法 是否在 全局对象中
+        !("dateMulti" in _global) && (_global.dateMulti = dateMulti);
+    }
+}())

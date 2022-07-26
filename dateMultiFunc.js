@@ -156,7 +156,7 @@
             if (this.dateMultiEles['date_multi_popup']) {
                 this.dateMultiEles['date_multi_popup'].classList.remove("date_multi_show");
             }
-            document.body.style.overflow = "block";
+            document.body.style.overflow = "visible";
             // 清楚 多余赋值
             this.clear();
         }

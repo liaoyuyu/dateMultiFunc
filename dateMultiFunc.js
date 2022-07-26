@@ -9,7 +9,7 @@ class dateMultiFunc {
             selectBg: "#409EFE",//选中的背景颜色
             selectColor: "#ffffff",//选中文字颜色
             tranBg: "#A0CFFF",//过渡背景颜色
-            tranColor: "#ffffff",//过渡文字颜色
+            tranColor: "#333333",//过渡文字颜色
             selectRadius: 100,//(百分比)选中的开始结束时间 圆角样式
             color: "#333333",//全局文字颜色
             background: "#ffffff",//背景颜色

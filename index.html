@@ -19,6 +19,8 @@
 <script src="./dateMultiFunc.js"></script>
 <script>
     let obj = new dateMultiFunc({
+        minTime: 10,
+        maxTime: 0,
         cancelFunc: () => {
             console.log("取消")
         },

@@ -20,6 +20,7 @@
                 cancelFunc: () => { },//取消回调
                 confirmText: "确认",//确认按钮文案
                 confirmFunc: () => { },//确认回调
+                type: 0,//类型， 0：单选  1：多选  2：时间范围
                 backFormat: ".",//返回格式(默认 . 分割)
                 defaultYears: "",//默认打开显示的年月(正常时间)  2022.07  2022-7-25  2022/7/2 10:00 或者 Date 时间
                 // 数字，表示 默认时间的 前后多少年（1表示默认时间的上一年为可选时间范围）
@@ -35,11 +36,9 @@
             this.optionalEnd = {};// maxTime 装换好的时间
 
             this.currYears = {};//当前显示的年月
-            this.startTime = [];//选中的开始时间 年月日 [2022,7,5]
-            this.endTime = [];//选中的结束时间 年月日 [2022,7,5]
-            this.select_first = "";//选中的开始对象
-            this.select_last = "";//选中的结束对象
-            this.select_period = [];// 范围区间的过渡对象 合集
+            this.selectTimes = [];//选择的时间数组  列:[[2022,7,5],[2022,7,4]] //年月日
+            this.selectObj = [];//选中的对象 数组  列: [obj,obj]
+            this.selectPeriod = [];// 范围区间的过渡对象 合集
 
             this.dateMultiEles = {};//事件插件 元素对象 合集
             // 初始化
@@ -164,11 +163,9 @@
         }
         // 清除
         clear() {
-            this.startTime = [];//选中的开始时间 年月日 [2022,7,5]
-            this.endTime = [];//选中的结束时间 年月日 [2022,7,5]
-            this.select_first = "";//选中的开始对象
-            this.select_last = "";//选中的结束对象
-            this.select_period = [];// 范围区间的过渡对象 合集
+            this.selectTimes = [];//选择的时间数组  列:[[2022,7,5],[2022,7,4]] //年月日
+            this.selectObj = [];//选中的对象 数组  列: [obj,obj]
+            this.selectPeriod = [];// 范围区间的过渡对象 合集
         }
         // 销毁
         destroy() {
@@ -448,9 +445,9 @@
                 } else if (this.isString(optionalStart)) {
                     // 字符串时间
                     // 判断 是否比 默认时间 小
-                    let tiem = this.getYearsDay(optionalStart);
-                    if (tiem.timestamp <= defaultYears.timestamp) {
-                        optionalStart = tiem
+                    let time = this.getYearsDay(optionalStart);
+                    if (time.timestamp <= defaultYears.timestamp) {
+                        optionalStart = time
                     } else {
                         // 可选开始时间比默认时间大了
                         throw "minTime 时间 比 默认时间 大了！";
@@ -482,9 +479,9 @@
                 } else if (this.isString(optionalEnd)) {
                     // 字符串时间
                     // 判断 是否比 默认时间 大
-                    let tiem = this.getYearsDay(optionalEnd);
-                    if (tiem.timestamp >= defaultYears.timestamp) {
-                        optionalEnd = tiem
+                    let time = this.getYearsDay(optionalEnd);
+                    if (time.timestamp >= defaultYears.timestamp) {
+                        optionalEnd = time
                     } else {
                         // 可选开始时间比默认时间小了
                         throw "maxTime 时间 比 默认时间 小了！";
@@ -689,30 +686,26 @@
         // 确认按钮点击事件
         confirmFunc() {
             // 判断是否选择了日期
-            if (!this.startTime.length) return;
+            if (!this.selectTimes.length) return;
 
-            // 判断是否有结束时间，没有结束时间，把开始赋值给结束
-            if (!this.endTime.length) {
-                this.endTime = this.startTime;
-            }
+            // 返回的 数组数据
+            let res = this.selectTimes;//返回数据
 
-            // 回调参数
-            let options = {
-                startTime: {
-                    year: this.startTime[0],//年
-                    month: this.startTime[1],//月
-                    day: this.startTime[2],//日
-                    time: this.startTime.join(this.options.backFormat),//时间字符串
-                },
-                endTime: {
-                    year: this.endTime[0],//年
-                    month: this.endTime[1],//月
-                    day: this.endTime[2],//日
-                    time: this.endTime.join(this.options.backFormat)
+
+            // 时间区间，返回 开始和结束 json
+            if (this.options.type == 2) {
+                if (!this.selectTimes[1]) {
+                    // 没有结束时间，把开始赋值给结束
+                    this.selectTimes[1] = this.selectTimes[0];
+                }
+                res = {
+                    statrTime: this.selectTimes[0],
+                    endTime: this.selectTimes[1],
                 }
             }
+
             // 回调
-            this.options.confirmFunc(options);
+            this.options.confirmFunc(res);
             // 关闭
             this.close();
         }
@@ -750,114 +743,148 @@
         dateClick(e) {
             //当前年月
             let { year, month } = this.currYears;
-            // 判断 是否是第一次点击
-            if (!this.startTime.length) {
-                // 给点击元素添加第一次类
-                this.select_first = e.target;
-                this.select_first.classList.add("select_firstlast");
-                let day = Number(e.target.innerText);
-                this.startTime = [year, month, day];
+            let day = Number(e.target.innerText);
+            let timeJson = {
+                year: year,//年
+                month: month,//月
+                day: day,//日
+                time: year + this.options.backFormat + month + this.options.backFormat + day,//时间字符串
+                timestamp: new Date(`${year}.${month}.${day}`).getTime()//时间戳
+            }
+            // 给当前添加类
+            e.target.classList.add("select_firstlast");
+
+            // 单选
+            if (this.options.type == 0) {
+                // 清空选中
+                this.selectTimes = [];
+                // 判断是否选择了，选了，就删除类
+                if (this.selectObj.length) this.selectObj[0].classList.remove("select_firstlast");
+                // 保存
+                this.selectObj = [e.target];
+                // 保存时间
+                this.selectTimes = [timeJson];
                 return;
             }
 
-            // 不是第一次，就是结束日期
-            if (!this.endTime.length) {
-                // 给点击元素添加最后类
-                this.select_last = e.target;
-                this.select_last.classList.add("select_firstlast");
-                let day = Number(e.target.innerText);
-                this.endTime = [year, month, day];
+            // 多选
+            if (this.options.type == 1) {
+                // 判断 数组中 是否 已经选了，选过了，就取消选中
+                let index = this.selectTimes.findIndex((v) => { return v.timestamp == timeJson.timestamp })
+                if (index >= 0) {
+                    // 取消
+                    this.selectObj[index].classList.remove("select_firstlast");
+                    // 删除数组对应数据
+                    this.selectObj.splice(index, 1)
+                    this.selectTimes.splice(index, 1)
+                } else {
+                    // 保存
+                    this.selectObj.push(e.target);
+                    // 保存时间
+                    this.selectTimes.push(timeJson);
+                }
+                return;
+            }
+
+
+            // 判断是否是 时间区间
+            if (this.options.type == 2) {
+                // 判断是否 2次以上了，以上了就重新开始选开始和结束
+                if (this.selectTimes.length >= 2) {
+                    this.selectTimes = [];
+                    for (let i = 0; i < this.selectObj.length; i++) {
+                        this.selectObj[i].classList.remove("select_firstlast");
+                    }
+                    this.selectObj = [];
+                    // 清空 选中过渡
+                    this.cleanSelectPeriod();
+                }
+
+                // 判断 是否是第一次点击
+                if (!this.selectTimes.length) {
+                    this.selectTimes = [timeJson]
+                    // 保存
+                    this.selectObj = [e.target];
+                    return;
+                }
+
+                // 第二次
+                this.selectObj.push(e.target);
+                this.selectTimes.push(timeJson)
+
                 // 判断 开始和结束 是否取反(结束时间比开始时间小)
                 this.isTimeReverse();
-                return;
             }
-
-            // 已经选择了开始和结束，再次点击，重新选择
-            // 清空 选中过渡
-            this.cleanSelectPeriod();
-            // 移除之前的
-            this.select_first.className = "";
-            this.select_last.className = "";
-            this.endTime = [];
-
-            // 给点击元素添加第一次类
-            this.select_first = e.target;
-            this.select_first.classList.add("select_firstlast");
-            let day = Number(e.target.innerText);
-            this.startTime = [year, month, day];
         }
+
+        // 时间区间**************************************
         // 判断 时间是否选反，选反了就自动回正
         isTimeReverse() {
-            // 判断 开始年月日 和 结束年月日
-
+            // 判断 开始时间 是否比 结束时间 大
             // 需要取反
-            if (this.endTime[0] < this.startTime[0] || // 结束年份 小于 开始年份
-                (this.endTime[0] == this.startTime[0] && this.endTime[1] < this.startTime[1]) || // 年份相同，结束月份 小于 开始月份
-                (this.endTime[0] == this.startTime[0] && this.endTime[1] == this.startTime[1] && this.endTime[2] < this.startTime[2]) // 年月相同，结束日期 小于 开始日期
-            ) {
-                // 需要取反
-                // 时间取反
-                let item = this.startTime;
-                this.startTime = this.endTime;
-                this.endTime = item;
+            if (this.selectTimes[0].timestamp > this.selectTimes[1].timestamp) {
+                // 取反时间
+                let item = this.selectTimes[0];
+                this.selectTimes[0] = this.selectTimes[1];
+                this.selectTimes[1] = item;
 
-                // 元素取反
-                item = this.select_first;
-                this.select_first = this.select_last;
-                this.select_last = item;
+                // 取反 元素对象
+                item = this.selectObj[0];
+                this.selectObj[0] = this.selectObj[1];
+                this.selectObj[1] = item;
             }
-
             // 设置选中区间的过渡样式
             this.setSectionStyle();
         }
         // 重新设置 开始选中 结束选中样式
         setFirstEndStyle(p, i) {
+            if (!(this.selectTimes.length >= 2) || !this.selectObj.length) return;
             // 判断 当前年月 是否是 选择元素的年月,并且索引对应
             //当前年月
             let { year, month } = this.currYears;
-            if (this.startTime.length && year == this.startTime[0] && month == this.startTime[1]) {
-                let index = Number(this.select_first.getAttribute("index"))
+            let index = "";
+            if (year == this.selectTimes[0].year && month == this.selectTimes[0].month) {
+                // 开始
+                index = Number(this.selectObj[0].getAttribute("index"))
                 if (i == index) {
-                    // 开始选中在其中
                     p.classList.add("select_firstlast");
-                    this.select_first = p;//重新赋值，因为已经替换了，它已经是过去的对象了
+                    // 重新 赋值
+                    this.selectObj[0] = p;
                 }
             }
-
-            if (this.endTime.length && year == this.endTime[0] && month == this.endTime[1]) {
-                let index = Number(this.select_last.getAttribute("index"))
+            if (year == this.selectTimes[1].year && month == this.selectTimes[1].month) {
+                // 结束
+                index = Number(this.selectObj[1].getAttribute("index"))
                 if (i == index) {
-                    // 结束选中在其中
                     p.classList.add("select_firstlast");
-                    this.select_last = p;//重新赋值，因为已经替换了，它已经是过去的对象了
+                    // 重新 赋值
+                    this.selectObj[1] = p;
                 }
             }
         }
         // 设置选中区间的过渡样式
         setSectionStyle() {
-            this.select_period = [];//清空
+            this.selectPeriod = [];//清空
 
             // 判断是否 选中了时间
-            if (!this.startTime.length || !this.endTime.length) return;
+            if (!(this.selectTimes.length >= 2)) return;
 
             // 判断 开始 和 结束 是否是一个时间
-            if (this.startTime[0] == this.endTime[0] && this.startTime[1] == this.endTime[1] && this.startTime[2] == this.endTime[2]) {
-                return;
-            }
+            if (this.selectTimes[0].timestamp == this.selectTimes[1].timestamp) return;
 
             let firstIndex = -1;//开始索引
             let lastIndex = -1;//结束索引
-            let { year, month, days, oneweek } = this.currYears;
+            let { year, month, days, oneweek } = this.currYears;//当前年月日
 
             // 判断 当前年月 是否是 选择元素的年月
-            if (year == this.startTime[0] && month == this.startTime[1]) {
+            if (year == this.selectTimes[0].year && month == this.selectTimes[0].month) {
                 // 开始选中在当前年月，设置开始索引
-                firstIndex = Number(this.select_first.getAttribute("index"));
+                firstIndex = Number(this.selectObj[0].getAttribute("index"));
             }
 
-            if (year == this.endTime[0] && month == this.endTime[1]) {
+            if (year == this.selectTimes[1].year && month == this.selectTimes[1].month) {
                 // 结束选中在当前年月，设置结束索引
-                lastIndex = Number(this.select_last.getAttribute("index"));
+                lastIndex = Number(this.selectObj[1].getAttribute("index"));
             }
 
 
@@ -868,13 +895,13 @@
             if (firstIndex >= 0 && lastIndex >= 0) {
                 // 在同 年月，就循环两者之间的次数 - 1
                 forIndex = lastIndex - firstIndex - 1;
-                objele = this.select_first.nextSibling;//第一个的下一个
+                objele = this.selectObj[0].nextSibling;//第一个的下一个
             }
             // 开始 在当前月
             if (firstIndex >= 0 && lastIndex < 0) {
                 // 就循环 开始 到月份最后(天数 + 第一天的位置 = 总数量)
                 forIndex = days + oneweek - firstIndex - 1;
-                objele = this.select_first.nextSibling;//第一个的下一个
+                objele = this.selectObj[0].nextSibling;//第一个的下一个
             }
             // 结束 在当前月
             if (firstIndex < 0 && lastIndex >= 0) {
@@ -885,7 +912,7 @@
             // 当前月份 在 开始和结束 中
             if (firstIndex == -1 && lastIndex == -1) {
                 // 判断 当前年月 是否 选择的区间中
-                if (year >= this.startTime[0] && year <= this.endTime[0] && month >= this.startTime[1] && month <= this.endTime[1]) {
+                if (year >= this.selectTimes[0].year && year <= this.selectTimes[1].year && month >= this.selectTimes[0].month && month <= this.selectTimes[1].month) {
                     // 在区间中，就当前月1号 到 当前月最后天
                     forIndex = days;
                     // 开始位置，就是 oneweek（1号位置索引）
@@ -896,25 +923,25 @@
             for (let i = 0; i < forIndex; i++) {
                 // 从开始 一直循环 往下，添加类
                 objele.className = "select_period";
-                // 报错对象
-                this.select_period.push(objele);
+                // 保存对象
+                this.selectPeriod.push(objele);
                 objele = objele.nextSibling;
             }
 
             // 给 开始 和 结束 添加 闭合类
-            this.select_first.classList.add("select_first");
-            this.select_last.classList.add("select_last");
+            this.selectObj[0].classList.add("select_first");
+            this.selectObj[1].classList.add("select_last");
         }
         // 清楚 选中过渡
         cleanSelectPeriod() {
             // 判断 是否为空
-            if (this.select_period.length) {
+            if (this.selectPeriod.length) {
                 // 清除样式
-                for (let i = 0; i < this.select_period.length; i++) {
-                    this.select_period[i].className = "";
+                for (let i = 0; i < this.selectPeriod.length; i++) {
+                    this.selectPeriod[i].className = "";
                 }
                 // 清空
-                this.select_period = [];
+                this.selectPeriod = [];
             }
         }
     }

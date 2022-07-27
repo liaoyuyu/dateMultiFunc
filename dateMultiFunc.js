@@ -144,11 +144,13 @@
             // 塞入 时间列表
             this.createDateList();
 
-            this.options.isShow = true;
-            if (this.dateMultiEles['date_multi_popup']) {
-                this.dateMultiEles['date_multi_popup'].classList.add("date_multi_show");
-                document.body.style.overflow = "hidden"
-            }
+            setTimeout(() => {
+                this.options.isShow = true;
+                if (this.dateMultiEles['date_multi_popup']) {
+                    this.dateMultiEles['date_multi_popup'].classList.add("date_multi_show");
+                    document.body.style.overflow = "hidden"
+                }
+            }, 0)
         }
         // 关闭
         close() {

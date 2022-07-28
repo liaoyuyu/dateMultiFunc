@@ -1,6 +1,6 @@
 
 // 时间 选择 插件
-; (function (undefined) {
+; (function (win, undefined) {
     class dateMultiFunc {
         // options 参数 {}
         constructor(options) {
@@ -1083,17 +1083,6 @@
         }
     }
 
-    // 全局对象
-    let _global = (function () { return this || (0, eval)('this'); }());
-
-
-    // 判断环境
-    if (typeof module !== "undefined" && module.exports) {
-        module.exports = dateMulti;
-    } else if (typeof define === "function" && define.amd) {
-        define(function () { return dateMulti; });
-    } else {
-        // 判断 方法 是否在 全局对象中
-        !("dateMulti" in _global) && (_global.dateMulti = dateMulti);
-    }
-}())
+    // 抛出
+    win.dateMulti = dateMulti;
+}(window))

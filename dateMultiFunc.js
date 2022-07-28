@@ -176,9 +176,12 @@
         // 销毁
         destroy() {
             this.clear();
+            // 删除 html
             if (this.dateMultiEles.date_multi_popup) {
                 this.dateMultiEles.date_multi_popup.remove();
             }
+            this.appointTimeArr = [];//指定日期可选
+            this.appointOnArr = [];//指定不可选日期可选
             this.minTimeJson = {};// minTime 转换好的时间
             this.maxTimeJson = {};// maxTime 装换好的时间
 
@@ -1065,12 +1068,18 @@
         }
     }
 
-    // 原型链，增加打开方法
+    // 打开方法
     dateMulti.prototype.show = function () {
         if (dateFuncObj) {
             dateFuncObj.show();
         } else {
             throw "请先创建！"
+        }
+    }
+    // 销毁方法
+    dateMulti.prototype.destroy = function () {
+        if (dateFuncObj) {
+            dateFuncObj.destroy();
         }
     }
 

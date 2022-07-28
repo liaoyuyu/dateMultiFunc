@@ -23,17 +23,17 @@
                 type: 0,//类型， 0：单选  1：多选  2：时间范围
                 backFormat: ".",//返回格式(默认 . 分割)
                 defaultYears: "",//默认打开显示的年月(正常时间)  2022.07  2022-7-25  2022/7/2 10:00 或者 Date 时间
-                // 数字，表示 默认时间的 前后多少年（1表示默认时间的上一年为可选时间范围）
-                // 0 表示  当前默认时间
-                // 时间 表示 开始之前结束之后可选，其他不可选
-                // 如果不写，表示为默认时间的前后100年
-                minTime: "",// 可选开始时间（同默认时间格式）（可数字，可时间或时间字符串）
-                maxTime: "",// 可选结束时间（同默认时间格式）可数字，可时间或时间字符串）
+
+                // 数字：表示 默认时间的 前后多少年（1表示默认时间的上一年为可选时间范围）
+                // 0 表示  当前默认时间,如果不写，表示为默认时间的前后100年 
+                // 最小时间 必须 比 最大时间 小 ,如果 默认打开时间 没在 区间中，默认时间设置成最小时间
+                minTime: "",// 可选最小时间（同默认时间格式）（可数字，可时间或时间字符串）
+                maxTime: "",// 可选最大时间（同默认时间格式）可数字，可时间或时间字符串）
                 isShow: false,//是否显示
                 ...options
             }
-            this.optionalStart = {};// minTime 转换好的时间
-            this.optionalEnd = {};// maxTime 装换好的时间
+            this.minTimeJson = {};// minTime 转换好的时间
+            this.maxTimeJson = {};// maxTime 装换好的时间
 
             this.currYears = {};//当前显示的年月
             this.selectTimes = [];//选择的时间数组  列:[[2022,7,5],[2022,7,4]] //年月日
@@ -173,8 +173,8 @@
             if (this.dateMultiEles.date_multi_popup) {
                 this.dateMultiEles.date_multi_popup.remove();
             }
-            this.optionalStart = {};// minTime 转换好的时间
-            this.optionalEnd = {};// maxTime 装换好的时间
+            this.minTimeJson = {};// minTime 转换好的时间
+            this.maxTimeJson = {};// maxTime 装换好的时间
 
             this.currYears = {};//当前显示的年月
 
@@ -418,98 +418,90 @@
             }
             document.head.appendChild(style);
         }
-        // 转换 可选时间
+        // 转换 最大最小时间
         /* 
+            表示 开始之前结束之后可选，其他不可选
             数字，表示 默认时间的 前后多少年（1表示默认时间的上一年为可选时间范围）
             0 表示  当前默认时间
-            时间 表示 开始之前结束之后可选，其他不可选
             如果不写，表示为默认时间的前后100年
+            最小时间 必须 比 最大时间 小
+            如果 默认打开时间 没在 区间中，默认时间设置成最小时间
         */
         transformOptionaTime() {
             // 默认时间
             let defaultYears = this.getYearsDay(this.options.defaultYears);
-            // 获取 可选开始 和 可选结束 时间
-            let optionalStart = this.options.minTime;
-            let optionalEnd = this.options.maxTime;
+            // 获取 最小时间 和 最大时间
+            let minTimeJson = this.options.minTime;
+            let maxTimeJson = this.options.maxTime;
 
 
-            // 没有 可选开始时间
-            try {
-                if (optionalStart === "") {
-                    // 默认时间 前 100年
-                    defaultYears.year = defaultYears.year - 100;
-                    optionalStart = defaultYears;
-                } else if (Number(optionalStart) === 0) {
-                    // 数字 0 ，当前默认时间
-                    optionalStart = defaultYears;
-                } else if (this.isString(optionalStart)) {
-                    // 字符串时间
-                    // 判断 是否比 默认时间 小
-                    let time = this.getYearsDay(optionalStart);
-                    if (time.timestamp <= defaultYears.timestamp) {
-                        optionalStart = time
-                    } else {
-                        // 可选开始时间比默认时间大了
-                        throw "minTime 时间 比 默认时间 大了！";
-                    }
-                } else if (this.isNumber(optionalStart)) {
-                    // 整数数字
-                    defaultYears.year = defaultYears.year - optionalStart;
-                    optionalStart = defaultYears;
-                } else {
-                    // 有问题
-                    throw "minTime 不正确！";
-                }
-            } catch (err) {
-                throw err;
+            // 判断最小时间
+            minTimeJson = this.getMaxMinTime(minTimeJson, 0);
+            maxTimeJson = this.getMaxMinTime(maxTimeJson, 1);
+
+            // 判断 最大时间 是否比 最小时间 小
+            if (maxTimeJson.timestamp < minTimeJson.timestamp) {
+                throw "最大时间应该比最小时间大！"
             }
-
-
-
-            try {
-                defaultYears = this.getYearsDay(this.options.defaultYears);
-                // 没有 可选结束时间
-                if (optionalEnd === "") {
-                    // 默认时间 前 100年
-                    defaultYears.year = defaultYears.year + 100;
-                    optionalEnd = defaultYears;
-                } else if (Number(optionalEnd) === 0) {
-                    // 数字 0 ，当前默认时间
-                    optionalEnd = defaultYears;
-                } else if (this.isString(optionalEnd)) {
-                    // 字符串时间
-                    // 判断 是否比 默认时间 大
-                    let time = this.getYearsDay(optionalEnd);
-                    if (time.timestamp >= defaultYears.timestamp) {
-                        optionalEnd = time
-                    } else {
-                        // 可选开始时间比默认时间小了
-                        throw "maxTime 时间 比 默认时间 小了！";
-                    }
-                } else if (this.isNumber(optionalEnd)) {
-                    // 整数数字
-                    defaultYears.year = defaultYears.year + optionalEnd;
-                    optionalEnd = defaultYears;
-                } else {
-                    // 有问题
-                    throw "maxTime 不正确！";
-                }
-            } catch (err) {
-                throw err;
+            // 判断 默认时间 是否 在 最大最小区间中,不在区间中，默认时间就是最小时间
+            if (defaultYears.timestamp > maxTimeJson.timestamp || defaultYears.timestamp < minTimeJson.timestamp) {
+                // 不在区间中,默认时间设置成 最小时间
+                this.options.defaultYears = minTimeJson.timestamp;
             }
-
 
             // 保存
-            this.optionalStart = optionalStart;
-            this.optionalEnd = optionalEnd;
+            this.minTimeJson = minTimeJson;
+            this.maxTimeJson = maxTimeJson;
         }
-        // 判断是否是 字符串
-        isString(str) {
-            return (typeof str == 'string') && str.constructor == String
-        }
-        // 判断是否是 数字
-        isNumber(num) {
-            return (typeof num == 'number') && num % 1 === 0
+        // 获取 最大最小时间  type  0: 最小时间   1: 最大时间
+        getMaxMinTime(time, type) {
+            // 默认时间
+            let defaultYears = this.getYearsDay(this.options.defaultYears);
+            try {
+                switch (typeof time) {
+                    case "string"://字符串
+                        // 判断是否为 空
+                        if (time === "") {
+                            // 默认时间 前后 100年
+                            if (type) {
+                                // 最大时间
+                                defaultYears.year = defaultYears.year + 100;
+                            } else {
+                                // 最小时间
+                                defaultYears.year = defaultYears.year - 100;
+                            }
+                            time = defaultYears;
+                        } else {
+                            // 字符串时间
+                            time = this.getYearsDay(time);//转换时间
+                        }
+                        break;
+                    case "number"://数字
+                        // 判断是否是整数
+                        if (time % 1 === 0) {
+                            time = Math.abs(time);//绝对值
+                            // 判断 加减
+                            if (type) {
+                                // 最大时间，加
+                                defaultYears.year = defaultYears.year + time;
+                            } else {
+                                // 最小时间，减
+                                defaultYears.year = defaultYears.year - time;
+                            }
+                            time = defaultYears;
+                        } else {
+                            // 不是整数
+                            throw "数字必须是整数！";
+                        }
+                        break;
+                    default:
+                        throw "时间格式不正确！";
+                }
+            } catch (err) {
+                throw err;
+            }
+
+            return time;
         }
         // 获取 年 月 日 天数 1号位置  isSave:是否保存成 当前时间
         getYearsDay(time, isSave) {
@@ -520,7 +512,10 @@
             if (time) {
                 try {
                     // 把横线转成/线（ios 横线 会 NaN）
-                    time = time.replace(/\-/g, "/");
+                    // 判断是否是字符串
+                    if (typeof time == 'string') {
+                        time = time.replace(/\-/g, "/");
+                    }
                     time = new Date(time);
                     if (time == "Invalid Date") {
                         // 无效时间
@@ -592,25 +587,25 @@
             // 当前 时间
             let { year, month, days, oneweek } = this.currYears;
             // 可选范围时间
-            let optionalStart = this.optionalStart;
-            let optionalEnd = this.optionalEnd;
-            let today = 0;//几号
-            let type = 0;  // 1:表示几号之前   2:表示几号几后 
-            // 判断当前时间是否在 可选范围之外
-            if (year == optionalStart.year && month == optionalStart.month) {
+            let minTimeJson = this.minTimeJson;
+            let maxTimeJson = this.maxTimeJson;
+            let today = [];//几号
+            let type = [];  // 1:表示几号之前   2:表示几号几后 
+            // 判断当前时间是否在 最小时间 月
+            if (year == minTimeJson.year && month == minTimeJson.month) {
                 // today 之前的时候都不可选
-                type = 1;
-                today = optionalStart.today;
+                type[0] = 1;
+                today[0] = minTimeJson.today;
                 // 前面的时间不可选了
                 this.dateMultiEles.prev_month.style.display = "none";
             } else {
                 this.dateMultiEles.prev_month.style.display = "block";
             }
 
-            if (year == optionalEnd.year && month == optionalEnd.month) {
+            if (year == maxTimeJson.year && month == maxTimeJson.month) {
                 // today 之后的时间都不可选
-                type = 2;
-                today = optionalEnd.today;
+                type[1] = 2;
+                today[1] = maxTimeJson.today;
                 // 后面的时间不可选了
                 this.dateMultiEles.next_month.style.display = "none";
             } else {
@@ -626,12 +621,9 @@
                 if (i >= oneweek) {
                     let text = i - oneweek + 1;
                     p.innerHTML = text;
-                    // 判断 可选范围是否在当前月
-                    if (type == 1 && today > text) {
+
+                    if ((type.indexOf(1) >= 0 && today[0] > text) || (type.indexOf(2) >= 0 && today[1] < text)) {
                         // 可选开始在当前月
-                        p.classList.add("on_select")
-                    } else if (type == 2 && today < text) {
-                        // 可选结束在当前月
                         p.classList.add("on_select")
                     } else {
                         // 可选
@@ -642,7 +634,6 @@
                             this.dateClick(e)
                         }, false)
                     }
-
                 }
                 // 添加索引
                 p.setAttribute("index", i);

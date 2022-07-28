@@ -5,24 +5,25 @@
         // options 参数 {}
         constructor(options) {
             this.options = {
+                type: 0,//类型， 0：单选  1：多选  2：时间范围
                 position: "bottom",//位置,默认底部 值：center top bottom
                 radius: 0,//圆角  数字 或 数组  [0,0,0,0] 同 css border-radius
+                color: "#333333",//全局文字颜色
+                background: "#ffffff",//内容背景颜色
+                opacity: 0.7,//遮罩的透明度
                 selectBg: "#409EFE",//选中的背景颜色
                 selectColor: "#ffffff",//选中文字颜色
+                selectRadius: 100,//(百分比)选中的开始结束时间 圆角样式
                 tranBg: "#A0CFFF",//过渡背景颜色
                 tranColor: "#333333",//过渡文字颜色
-                selectRadius: 100,//(百分比)选中的开始结束时间 圆角样式
-                color: "#333333",//全局文字颜色
-                background: "#ffffff",//背景颜色
                 title: "选择时间",//标题
                 isCancel: true,//是否显示取消按钮
                 cancelText: "取消",//取消按钮文案
                 cancelFunc: () => { },//取消回调
                 confirmText: "确认",//确认按钮文案
                 confirmFunc: () => { },//确认回调
-                type: 0,//类型， 0：单选  1：多选  2：时间范围
                 backFormat: ".",//返回格式(默认 . 分割)
-                isShow: false,//是否显示
+                isShow: false,//是否立即显示
 
                 // 优先级: (指定日期  >  指定不可选日期)(时间范围类型无效) > 最大最小时间  >  默认时间
                 appointTime: [],//指定日期可选, type 0  1 有效， 字符串数组 和 json数组  列:["2022.7.1","2020.7.3"]  [{date:"2022.7.1",text:"111"},{date:"2022.7.2",text:"222"}]
@@ -30,8 +31,8 @@
                 // 数字：表示 默认时间的 前后多少年（1表示默认时间的上一年为可选时间范围）
                 // 0 表示  当前默认时间,如果不写，表示为默认时间的前后100年 
                 // 最小时间 必须 比 最大时间 小 ,如果 默认打开时间 没在 区间中，默认时间设置成最小时间
-                minTime: "",// 可选最小时间（同默认时间格式）（可数字，可时间或时间字符串）
-                maxTime: "",// 可选最大时间（同默认时间格式）可数字，可时间或时间字符串）
+                minTime: "",// 可选最小时间（同默认时间格式）（可数字或时间字符串）
+                maxTime: "",// 可选最大时间（同默认时间格式）可数字或时间字符串）
                 defaultYears: "",//默认打开显示的年月(正常时间)  2022.07  2022-7-25  2022/7/2 10:00 或者 Date 时间
 
                 ...options
@@ -199,7 +200,8 @@
                     --tranColor: ${this.options.tranColor};
                     --selectRadius:${this.options.selectRadius}%;
                     --color:${this.options.color};
-                    --background:${this.options.background}
+                    --background:${this.options.background};
+                    --opacity:rgba(0, 0, 0, ${this.options.opacity});
                 }
                 .date_multi_popup,.date_multi_popup *{
                     margin: 0;
@@ -210,7 +212,7 @@
                     z-index: 2000;
                     width: 100%;
                     height: 100%;
-                    background: rgba(0, 0, 0, 0.7);
+                    background: var(--opacity);
                     font-size: 13px;
                     color: var(--color);
                     top: 0;
@@ -242,6 +244,7 @@
                     background-color: var(--background);
                     min-height: 20%;
                     padding-top: 6px;
+                    box-shadow: 0px 0px 3px -1px #999;
                     transition: all 0.3s 0.2s;
                     transform: translateY(100%);
                 }

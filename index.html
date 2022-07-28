@@ -22,21 +22,7 @@
 <!-- 普通用法 -->
 <script src="./dateMultiFunc.js"></script>
 <script>
-    let aaa = new dateMulti({
-        defaultYears: "",
-        minTime: "",
-        maxTime: 0,
-        // appointTime: ["2022.6.5", "2022.7.3", "2022.7.10"],
-        appointOn: ["2022.7.3", "2022.7.10"],
-        isShow: true,
-        type: 1,
-        cancelFunc: () => {
-            console.log("取消")
-        },
-        confirmFunc: (res) => {
-            console.log(res)
-        }
-    });
+    let aaa = new dateMulti();
     function showTime() {
         aaa.show();
     }

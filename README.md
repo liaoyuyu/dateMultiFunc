@@ -1,17 +1,16 @@
 # 移动端-时间选择多功能插件
 
 ### 1、介绍
-移动端-时间选择多功能插件；支持 单选，多选，时间范围，指定时间选择，不可选时间<br>
+移动端-时间选择多功能插件；支持 单选，多选，时间范围，指定时间选择，不可选时间
 <!-- github 地址: [blog.gitee.com](https://blog.gitee.com)  -->
 
 
-<br>
 
 ### 2、使用说明
 
 >引入： `<script src="./dateMultiFunc.js"></script>`
 
-<br/>使用:<br/>
+使用:
 ```js
 let dateMulti = new dateMulti({
     defaultYears: "",
@@ -31,7 +30,6 @@ let dateMulti = new dateMulti({
 });
 ```
 
-<br/>
 
 ### 3、参数说明
 
@@ -67,7 +65,6 @@ cancelFunc | 取消回调     | function |  () => { }  |  cancelFunc: () => {con
 confirmFunc | 确认回调     | function |  () => { }  |  confirmFunc: () => {console.log("取消")},
 
 
-<br/>
 
 
 ### 4、可用方法

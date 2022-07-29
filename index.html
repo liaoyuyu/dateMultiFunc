@@ -11,6 +11,9 @@
         html {
             width: 100%;
             overflow: hidden;
+            margin: 0;
+            padding: 0 5px;
+            box-sizing: border-box;
         }
 
         .nav {
@@ -53,19 +56,33 @@
 
 <body>
     <div class="nav">
+        类型
         <p onclick="singleDate()">单选</p>
         <p onclick="multipleDate()">多选</p>
         <p onclick="dateMulti()">时间范围</p>
     </div>
-
-
     <p>内容</p>
     <div class="list_con"></div>
+
+    <div class="nav">
+        位置
+        <p onclick="topShow()">顶部</p>
+        <p onclick="centerShow()">中部</p>
+        <p onclick="bottomShow()">默认底部</p>
+    </div>
+
+    <div class="nav">
+        自定义主题
+        <p onclick="oneStyle()">主题一</p>
+        <p onclick="twoStyle()">主题二</p>
+    </div>
 </body>
 
 </html>
 
 <script src="./dateMultiFunc.js"></script>
+
+<!-- 类型 -->
 <script>
     // 单选
     function singleDate() {
@@ -133,5 +150,102 @@
         }
         let list_con = document.querySelector(".list_con");
         list_con.innerHTML = html;
+    }
+</script>
+
+
+<!-- 位置 -->
+<script>
+    // 顶部显示
+    function topShow() {
+        let dateMulti = new dateMultiFunc({
+            type: 0,
+            position: "top",
+            radius: [0, 0, 10, 10],
+            cancelFunc: () => {
+                console.log("取消")
+            },
+            confirmFunc: (res) => {
+                console.log("确认")
+                console.log(res)
+            }
+        });
+        dateMulti.show();
+    }
+    // 中部显示
+    function centerShow() {
+        let dateMulti = new dateMultiFunc({
+            type: 0,
+            position: "center",
+            radius: 10,
+            cancelFunc: () => {
+                console.log("取消")
+            },
+            confirmFunc: (res) => {
+                console.log("确认")
+                console.log(res)
+            }
+        });
+        dateMulti.show();
+    }
+    // 底部显示
+    function bottomShow() {
+        let dateMulti = new dateMultiFunc({
+            type: 0,
+            position: "bottom",//默认
+            radius: [10, 10, 0, 0],
+            cancelFunc: () => {
+                console.log("取消")
+            },
+            confirmFunc: (res) => {
+                console.log("确认")
+                console.log(res)
+            }
+        });
+        dateMulti.show();
+    }
+</script>
+
+
+<!-- 自定义主题 -->
+<script>
+    // 主题一
+    function oneStyle() {
+        let dateMulti = new dateMultiFunc({
+            type: 2,
+            radius: [10, 10, 0, 0],
+            background: "#ef8e29",
+            color: "#fff",
+            tranColor: "#fff",
+            cancelFunc: () => {
+                console.log("取消")
+            },
+            confirmFunc: (res) => {
+                console.log("确认")
+                console.log(res)
+            }
+        });
+        dateMulti.show();
+    }
+    // 主题二
+    function twoStyle() {
+        let dateMulti = new dateMultiFunc({
+            type: 2,
+            radius: [10, 10, 0, 0],
+            background: "#fe4052",
+            color: "#fff",
+            selectBg: "#67C23A",
+            tranColor: "#fff",
+            tranBg: "#666",
+            cancelFunc: () => {
+                console.log("取消")
+                dateMulti.destroy();
+            },
+            confirmFunc: (res) => {
+                console.log("确认")
+                console.log(res)
+            }
+        });
+        dateMulti.show();
     }
 </script>

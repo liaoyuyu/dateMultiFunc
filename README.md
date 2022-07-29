@@ -37,7 +37,7 @@ let dateMulti = new dateMultiFunc({
 :------ | :------|:------:|:------:|:------:
 type | 类型 | Number        |0 | 0:单选  1:多选  2:时间范围
 position | 弹出位置 | String        |bottom | bottom, center, top
-radius   | 圆角     | Number \| Array |   0   | 同css的border-radius，Numbe值只对 顶部圆角起效
+radius   | 圆角     | Number \| Array |   0   | 同css的border-radius
 color | 全局文字颜色     | color |   #333333   | 颜色值
 background | 内容的背景颜色     | color |   #ffffff   | 颜色值
 opacity | 遮罩的透明度     | Number |   0.7   | 0-1
@@ -55,7 +55,7 @@ isShow | 是否初始化完成就自动显示     | Boolean |   false  | true,fa
 ||||  优先级: (指定日期  >  指定不可选日期)(type=2无效) > 最大最小时间  >  默认时间
 ||||    指定日期如果不在最大最小时间范围中，最大最小时间会自动设置成 指定日期中的最大最小时间
 ||||    最大最小时间范围 没 包含 默认时间，默认时间会自动设置成最小时间
-appointTime | 指定可选日期     | Array |   []  | type 0  1 有效，字符串数组 和 json数组  列:["2022.7.1","2020.7.3"]  [{date:"2022.7.1",text:"111"},{date:"2022.7.2",text:"222"}]
+appointTime | 指定可选日期     | Array |   []  | type 0  1 有效，字符串数组 和 json数组(可带上文本)  列:["2022.7.1","2020.7.3"]  [{date:"2022.7.1",text:"111"},{date:"2022.7.2",text:"222"}]
 appointOn | 指定不可选日期     | Array |   []  | 同上
 minTime | 可选最小时间     | Number \| String |  ""  |  Number：表示年数，默认时间的多少年前。<br/>String：不写天数，表示当月1号
 maxTime | 可选最大时间     | Number \| String |  ""  |  同上

@@ -1,9 +1,11 @@
 
 // 时间 选择 插件
 ; (function (win, undefined) {
+    let _this = null;
     class dateMultiFunc {
         // options 参数 {}
         constructor(options) {
+            _this = this;
             this.options = {
                 type: 0,//类型， 0：单选  1：多选  2：时间范围
                 position: "bottom",//位置,默认底部 值：center top bottom
@@ -14,8 +16,8 @@
                 selectBg: "#409EFE",//选中的背景颜色
                 selectColor: "#ffffff",//选中文字颜色
                 selectRadius: 100,//(百分比)选中的开始结束时间 圆角样式
-                tranBg: "#A0CFFF",//过渡背景颜色
-                tranColor: "#333333",//过渡文字颜色
+                tranBg: "#A0CFFF",//过渡背景颜色，type 2有效
+                tranColor: "#333333",//过渡文字颜色，type 2有效
                 title: "选择时间",//标题
                 isCancel: true,//是否显示取消按钮
                 cancelText: "取消",//取消按钮文案
@@ -37,26 +39,31 @@
 
                 ...options
             }
+
+            this.currYears = {};//当前显示的年月
             this.appointTimeArr = [];//指定日期可选
             this.appointOnArr = [];//指定不可选日期可选
             this.minTimeJson = {};// minTime 转换好的时间
             this.maxTimeJson = {};// maxTime 装换好的时间
+            this.dateMultiEles = {};//事件插件 元素对象 合集
 
-            this.currYears = {};//当前显示的年月
             this.selectTimes = [];//选择的时间数组  列:[[2022,7,5],[2022,7,4]] //年月日
             this.selectObj = [];//选中的对象 数组  列: [obj,obj]
             this.selectPeriod = [];// 范围区间的过渡对象 合集
 
-            this.dateMultiEles = {};//事件插件 元素对象 合集
             // 初始化
             this.init();
         }
         // 初始化
         init() {
-            // 销毁
-            this.destroy();
             // 转换 可选时间
             this.transformOptionaTime();
+
+            // 创建
+            this.create();
+        }
+        // 创建
+        create() {
             // 创建对象
             let date_multi_popup = document.createElement("div");
             date_multi_popup.className = "date_multi_popup";
@@ -176,32 +183,31 @@
         }
         // 销毁
         destroy() {
-            this.clear();
-            // 删除 html
-            if (this.dateMultiEles.date_multi_popup) {
+            try {
+                // 删除 html
                 this.dateMultiEles.date_multi_popup.remove();
-            }
-            this.appointTimeArr = [];//指定日期可选
-            this.appointOnArr = [];//指定不可选日期可选
-            this.minTimeJson = {};// minTime 转换好的时间
-            this.maxTimeJson = {};// maxTime 装换好的时间
+                // 并且删除css
+                let date_multi_func_css = document.getElementById("date_multi_func_css");
+                date_multi_func_css.remove();
 
-            this.currYears = {};//当前显示的年月
+                // 移除事件
+                this.removeEvent();
 
-            this.dateMultiEles = {};
+                dateFuncObj = null;
+            } catch (err) { }
         }
         // 生成 css 样式
         createdCss() {
             let css = `
                 :root {
-                    --selectBg: ${this.options.selectBg};
-                    --selectColor: ${this.options.selectColor};
-                    --tranBg: ${this.options.tranBg};
-                    --tranColor: ${this.options.tranColor};
-                    --selectRadius:${this.options.selectRadius}%;
-                    --color:${this.options.color};
-                    --background:${this.options.background};
-                    --opacity:rgba(0, 0, 0, ${this.options.opacity});
+                    --date_multi_func-selectBg: ${this.options.selectBg};
+                    --date_multi_func-selectColor: ${this.options.selectColor};
+                    --date_multi_func-tranBg: ${this.options.tranBg};
+                    --date_multi_func-tranColor: ${this.options.tranColor};
+                    --date_multi_func-selectRadius:${this.options.selectRadius}%;
+                    --date_multi_func-color:${this.options.color};
+                    --date_multi_func-background:${this.options.background};
+                    --date_multi_func-opacity:rgba(0, 0, 0, ${this.options.opacity});
                 }
                 .date_multi_popup,.date_multi_popup *{
                     margin: 0;
@@ -212,9 +218,9 @@
                     z-index: 2000;
                     width: 100%;
                     height: 100%;
-                    background: var(--opacity);
+                    background: var(--date_multi_func-opacity);
                     font-size: 13px;
-                    color: var(--color);
+                    color: var(--date_multi_func-color);
                     top: 0;
                     left: 0;
                     display: flex;
@@ -241,15 +247,17 @@
                     position: relative;
                     z-index: 5;
                     width: 100%;
-                    background-color: var(--background);
+                    background-color: var(--date_multi_func-background);
                     min-height: 20%;
                     padding-top: 6px;
                     box-shadow: 0px 0px 3px -1px #999;
                     transition: all 0.3s 0.2s;
                     transform: translateY(100%);
+                    opacity: 0;
                 }
                 .date_multi_show .date_multi_inner{
                     transform: translateY(0);
+                    opacity: 1;
                 }
                 .date_multi_popup .date_multi_title{
                     width: 100%;
@@ -288,7 +296,7 @@
                     width: 0;
                     height: 0;
                     border-left: 6px solid transparent;
-                    border-right: 6px solid var(--color);
+                    border-right: 6px solid var(--date_multi_func-color);
                     border-top: 4px solid transparent;
                     border-bottom: 4px solid transparent;
                     left: 50%;
@@ -297,7 +305,7 @@
                     margin-top: -6px;
                 }
                 .date_multi_popup .date_multi_time span:last-child::after{
-                    border-left: 6px solid var(--color);
+                    border-left: 6px solid var(--date_multi_func-color);
                     border-right: 6px solid transparent;
                 }
                 
@@ -360,15 +368,15 @@
                     transform: translateY(-50%);
                     left: 15%;
                     z-index: -1;
-                    border-radius: var(--selectRadius);
-                    background-color: var(--selectBg);
+                    border-radius: var(--date_multi_func-selectRadius);
+                    background-color: var(--date_multi_func-selectBg);
                 }
                 .date_multi_popup .date_list p.select_firstlast{
-                    color: var(--selectColor);
+                    color: var(--date_multi_func-selectColor);
                 }
                 /* 范围间样式 */
                 .date_multi_popup .date_list p.select_period{
-                    color: var(--tranColor);
+                    color: var(--date_multi_func-tranColor);
                 }
                 .date_multi_popup .date_list p.select_period::after,
                 .date_multi_popup .date_list p.select_firstlast::after
@@ -382,7 +390,7 @@
                     transform: translateY(-50%);
                     left: 0;
                     z-index: -2;
-                    background-color: var(--tranBg);
+                    background-color: var(--date_multi_func-tranBg);
                 }
                 .date_multi_popup .date_list p.select_firstlast::after{
                     width: 50%;
@@ -403,7 +411,7 @@
             let optionsCss = `
                 /* 圆角 数组就用数组圆角  不是数组就用 上面圆角*/
                 .date_multi_popup .date_multi_inner{
-                    border-radius:${this.options.radius.length ? `${this.options.radius.join("px ")}px` : `${this.options.radius}px ${this.options.radius}px 0 0`};
+                    border-radius:${this.options.radius.length ? `${this.options.radius.join("px ")}px` : `${this.options.radius}px`};
                 }
                 /* 位置*/
                 .date_multi_popup{
@@ -423,6 +431,7 @@
 
             let style = document.createElement('style');
             style.type = 'text/css';
+            style.id = "date_multi_func_css";
             if (style.styleSheet) {
                 style.styleSheet.cssText = css;
             } else {
@@ -735,10 +744,10 @@
                         // 可选
                         // 设置 开始选中 结束选中样式
                         this.setFirstEndStyle(p, i);
-                        // 添加点击事件
-                        p.addEventListener("click", (e) => {
+                        // 监听点击事件
+                        p.onclick = (e) => {
                             this.dateClick(e)
-                        }, false)
+                        }
                     }
                 }
                 // 添加索引
@@ -755,61 +764,71 @@
         // 初始化事件
         initEvent() {
             // 背景点击事件
-            this.dateMultiEles.date_multi_bg.addEventListener("click", () => {
-                this.close();
-                // 通知取消
-                this.options.cancelFunc();
-            }, false)
+            this.dateMultiEles.date_multi_bg.addEventListener("click", this.cancelFunc, false)
             // 取消按钮点击事件
-            this.dateMultiEles.cancel_btn.addEventListener("click", () => {
-                this.close();
-                // 通知取消
-                this.options.cancelFunc();
-            }, false)
+            this.dateMultiEles.cancel_btn.addEventListener("click", this.cancelFunc, false)
             // 确认按钮点击事件
-            this.dateMultiEles.confirm_btn.addEventListener("click", () => {
-                this.confirmFunc();
-            }, false)
+            this.dateMultiEles.confirm_btn.addEventListener("click", this.confirmFunc, false)
 
             // 上一月按钮点击
-            this.dateMultiEles.prev_month.addEventListener("click", () => {
-                this.prevNextMonthFunc();
-            }, false)
+            this.dateMultiEles.prev_month.addEventListener("click", this.prevNextMonthFunc, false)
             // 下一月按钮点击
-            this.dateMultiEles.next_month.addEventListener("click", () => {
-                this.prevNextMonthFunc(1);
-            }, false)
+            this.dateMultiEles.next_month.addEventListener("click", this.nextMonthClick, false)
+        }
+        // 移除事件
+        removeEvent() {
+            // 背景点击事件
+            this.dateMultiEles.date_multi_bg.removeEventListener("click", this.cancelFunc, false)
+            // 取消按钮点击事件
+            this.dateMultiEles.cancel_btn.removeEventListener("click", this.cancelFunc, false)
+            // 确认按钮点击事件
+            this.dateMultiEles.confirm_btn.removeEventListener("click", this.confirmFunc, false)
+
+            // 上一月按钮点击
+            this.dateMultiEles.prev_month.removeEventListener("click", this.prevNextMonthFunc, false)
+            // 下一月按钮点击
+            this.dateMultiEles.next_month.removeEventListener("click", this.nextMonthClick, false)
+        }
+        // 取消事件
+        cancelFunc() {
+            _this.close();
+            // 通知取消
+            _this.options.cancelFunc();
         }
         // 确认按钮点击事件
         confirmFunc() {
             // 判断是否选择了日期
-            if (!this.selectTimes.length) return;
+            if (!_this.selectTimes.length) return;
 
             // 返回的 数组数据
-            let res = this.selectTimes;//返回数据
+            let res = _this.selectTimes;//返回数据
 
 
             // 时间区间，返回 开始和结束 json
-            if (this.options.type == 2) {
-                if (!this.selectTimes[1]) {
+            if (_this.options.type == 2) {
+                if (!_this.selectTimes[1]) {
                     // 没有结束时间，把开始赋值给结束
-                    this.selectTimes[1] = this.selectTimes[0];
+                    _this.selectTimes[1] = _this.selectTimes[0];
                 }
                 res = {
-                    statrTime: this.selectTimes[0],
-                    endTime: this.selectTimes[1],
+                    statrTime: _this.selectTimes[0],
+                    endTime: _this.selectTimes[1],
                 }
             }
 
             // 回调
-            this.options.confirmFunc(res);
+            _this.options.confirmFunc(res);
             // 关闭
-            this.close();
+            _this.close();
+        }
+        // 下一月点击
+        nextMonthClick() {
+            _this.prevNextMonthFunc(true);
         }
         // 上一月 下一月 点击 type:false 上一月
         prevNextMonthFunc(type) {
             // 当前年月
-            let { year, month } = this.currYears;
+            let { year, month } = _this.currYears;
 
             // 判断是上一月还是下一月
             if (type) {
@@ -829,12 +848,12 @@
             }
 
             // 保存时间
-            this.getYearsDay(`${year}.${month}`, true);
+            _this.getYearsDay(`${year}.${month}`, true);
             // 重新生成 列表
-            this.dateMultiEles.date_list.remove();//删除
-            this.createDateList();
+            _this.dateMultiEles.date_list.remove();//删除
+            _this.createDateList();
             // 修改标题
-            this.dateMultiEles.time_tit.innerHTML = year + "年" + month + "日";
+            _this.dateMultiEles.time_tit.innerHTML = year + "年" + month + "日";
         }
         // 日期 点击事件
         dateClick(e) {
@@ -1055,20 +1074,12 @@
         if (typeof options != "object") {
             throw "参数格式错误！"
         }
-
         if (dateFuncObj) {
-            // 已创建，重新初始化
-            // 合并
-            dateFuncObj.options = {
-                ...dateFuncObj.options,
-                ...options
-            }
-            // 初始化
-            dateFuncObj.init();
-        } else {
-            // 没创建
-            dateFuncObj = new dateMultiFunc(options)
+            // 已创建，销毁
+            dateFuncObj.destroy();
         }
+        // 创建
+        dateFuncObj = new dateMultiFunc(options)
     }
 
     // 打开方法

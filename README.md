@@ -12,7 +12,7 @@
 
 使用:
 ```js
-let dateMulti = new dateMulti({
+let dateMulti = new dateMultiFunc({
     defaultYears: "",
     minTime: "",
     maxTime: 0,
@@ -61,8 +61,8 @@ minTime | 可选最小时间     | Number \| String |  ""  |  Number：表示年
 maxTime | 可选最大时间     | Number \| String |  ""  |  同上
 defaultYears | 默认打开显示的年月     | String \| Date |  ""  |  时间字符串 或 时间
 |||| 事件参数
-cancelFunc | 取消回调     | function |  () => { }  |  cancelFunc: () => {console.log("取消")},
-confirmFunc | 确认回调     | function |  () => { }  |  confirmFunc: () => {console.log("取消")},
+cancelFunc | 取消回调     | function |  () => { }  |  cancelFunc: () => {console.log("取消")}
+confirmFunc | 确认回调     | function |  (res) => { }  |  confirmFunc: (res) => {console.log("确认")}<br/> res 为 数组；type为2是返回的是 statrTime 和 endTime 的 json
 
 
 
@@ -74,7 +74,7 @@ confirmFunc | 确认回调     | function |  () => { }  |  confirmFunc: () => {c
 
 列子
 ```js
- let dateMulti = new dateMulti();
+ let dateMulti = new dateMultiFunc();
  dateMulti.show();
  dateMulti.destroy();
 ```

@@ -7,23 +7,131 @@
         content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>时间多功能插件</title>
     <style>
-        * {
-            opacity: 1;
+        body,
+        html {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .nav {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            margin-top: 30px;
+        }
+
+        .nav p {
+            font-size: 14px;
+            color: #333;
+            background-color: #eee;
+            line-height: 32px;
+            border-radius: 5px;
+            padding: 0 10px;
+            margin: 0 10px;
+            user-select: none;
+            transition: all 0.2s;
+        }
+
+        .nav p:active {
+            transform: scale(0.95);
+        }
+
+        .list_con {
+            width: 100%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .list_con p {
+            font-size: 12px;
+            color: #333;
+            word-break: break-all;
         }
     </style>
 </head>
 
 <body>
-    <button onclick="showTime()">选择时间</button>
+    <div class="nav">
+        <p onclick="singleDate()">单选</p>
+        <p onclick="multipleDate()">多选</p>
+        <p onclick="dateMulti()">时间范围</p>
+    </div>
+
+
+    <p>内容</p>
+    <div class="list_con"></div>
 </body>
 
 </html>
 
-<!-- 普通用法 -->
 <script src="./dateMultiFunc.js"></script>
 <script>
-    let aaa = new dateMulti();
-    function showTime() {
-        aaa.show();
+    // 单选
+    function singleDate() {
+        let dateMulti = new dateMultiFunc({
+            type: 0,
+            cancelFunc: () => {
+                console.log("取消")
+            },
+            confirmFunc: (res) => {
+                console.log("确认")
+                console.log(res)
+                listCon(res, 0)
+            }
+        });
+        dateMulti.show();
+    }
+
+
+    // 多选
+    function multipleDate() {
+        let dateMulti = new dateMultiFunc({
+            type: 1,
+            cancelFunc: () => {
+                console.log("取消")
+            },
+            confirmFunc: (res) => {
+                console.log("确认")
+                console.log(res)
+                listCon(res, 1)
+            }
+        });
+        dateMulti.show();
+    }
+
+
+    // 时间范围
+    function dateMulti() {
+        let dateMulti = new dateMultiFunc({
+            type: 2,
+            cancelFunc: () => {
+                console.log("取消")
+            },
+            confirmFunc: (res) => {
+                console.log("确认")
+                console.log(res)
+                listCon(res, 2)
+            }
+        });
+        dateMulti.show();
+    }
+
+
+
+
+    // 处理时间
+    function listCon(res, type) {
+        let html = ''
+        if (type == 2) {
+            html += `<p>开始时间：${JSON.stringify(res.statrTime)}</p>`
+            html += `<p>结束时间：${JSON.stringify(res.endTime)}</p>`
+        } else {
+            res.forEach(v => {
+                html += `<p>${JSON.stringify(v)}</p>`
+            });
+        }
+        let list_con = document.querySelector(".list_con");
+        list_con.innerHTML = html;
     }
 </script>

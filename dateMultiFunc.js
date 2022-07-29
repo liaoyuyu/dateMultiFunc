@@ -1087,5 +1087,5 @@
     }
 
     // 抛出
-    win.dateMulti = dateMulti;
+    win.dateMultiFunc = dateMulti;
 }(window))

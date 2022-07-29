@@ -31,6 +31,8 @@ let dateMulti = new dateMultiFunc({
 ```
 
 
+
+
 ### 3、参数说明
 
 参数名 | 参数作用 | 参数类型|默认值 | 描述
@@ -66,12 +68,17 @@ confirmFunc | 确认回调     | function |  (res) => { }  |  confirmFunc: (res)
 
 
 
-<br/>
-<br/>
-<br/>
 
 
 ### res值
+
+    res为数组数据，如果 type为2，返回的是 json数据 
+
+```js
+    // type = 2时，res值
+    endTime:{},//结束时间
+    statrTime:{},//开始时间
+```
 
 字段名 |  描述
 :------ | :------
@@ -82,9 +89,9 @@ time| 时间字符串，根据 backFormat 参数拼接， 如："2022.7.4"
 timestamp| 时间戳（ms）
 text| 文本
 
-<br/>
-<br/>
-<br/>
+
+
+
 
 ### 4、可用方法
 

@@ -28,7 +28,7 @@
                 isShow: false,//是否立即显示
 
                 // 优先级: (指定日期  >  指定不可选日期)(时间范围类型无效) > 最大最小时间  >  默认时间
-                appointTime: [],//指定日期可选, type 0  1 有效， 字符串数组 和 json数组  列:["2022.7.1","2020.7.3"]  {date:"2022.7.1"},{date:"2022.7.2"}  // 带文本未开发[{date:"2022.7.1",text:"111"},{date:"2022.7.2",text:"222"}]
+                appointTime: [],//指定日期可选, type 0  1 有效， 字符串数组 和 json数组  列:["2022.7.1","2020.7.3"]  {date:"2022.7.1"},{date:"2022.7.2"}  [{date:"2022.7.1",text:"111"},{date:"2022.7.2",text:"222"}]
                 appointOn: [],//指定不可选日期,同上
                 // 数字：表示 默认时间的 前后多少年（1表示默认时间的上一年为可选时间范围）
                 // 0 表示  当前默认时间,如果不写，表示为默认时间的前后100年 
@@ -196,8 +196,16 @@
                 dateFuncObj = null;
             } catch (err) { }
         }
+        // 修改 css 选中圆角
+        modifyCssRadius() {
+            // 判断 当前圆角是否大于10
+            if (this.options.selectRadius > 10) {
+                this.options.selectRadius = 10;
+            }
+        }
         // 生成 css 样式
         createdCss() {
+            console.log(this.options.selectRadius)
             let css = `
                 :root {
                     --date_multi_func-selectBg: ${this.options.selectBg};
@@ -334,12 +342,12 @@
                     width: 100%;
                     height:calc(2.8em * 6);
                     overflow: hidden;
-                    font-size: 15px;
+                    font-size: 14px;
                     display: flex;
                     flex-wrap: wrap;
                     align-content:flex-start;
                 }
-                .date_multi_popup .date_list p{
+                .date_multi_popup .date_list div{
                     display: block;
                     width: 14.28%;
                     overflow: hidden;
@@ -350,26 +358,37 @@
                     z-index: 2;
                     transition: all 0.1s;
                 }
+                .date_multi_popup .date_list p{
+                    display: block;
+                    width: 100%;
+                    overflow: hidden;
+                    text-align: center;
+                    line-height: 2.8em;
+                    height: 2.8em;
+                    position: relative;
+                    z-index: 2;
+                }
                 /* 文本 */
-                .date_multi_popup .date_list p span{
+                .date_multi_popup .date_list div span{
                     position: absolute;
-                    bottom: 0;
+                    bottom: 1px;
                     left: 0;
                     width: 100%;
                     text-align: center;
-                    font-size: 8px;
+                    font-size: 12px;
                     line-height: 1;
-                    z-index: 0,
+                    z-index: 3;
+                    transform: scale(0.7);
                 }
                 /* 不可选样式 */
-                .date_multi_popup .date_list p.on_select{
+                .date_multi_popup .date_list div.on_select{
                     opacity: 0.3;
                     pointer-events: none;
                 }
                 
                 /* 选中样式 */
                 /* 第一个和最后一个 圆样式*/
-                .date_multi_popup .date_list p.select_firstlast:before{
+                .date_multi_popup .date_list .select_firstlast p:before{
                     position: absolute;
                     content: "";
                     width: 70%;
@@ -382,15 +401,15 @@
                     border-radius: var(--date_multi_func-selectRadius);
                     background-color: var(--date_multi_func-selectBg);
                 }
-                .date_multi_popup .date_list p.select_firstlast{
+                .date_multi_popup .date_list .select_firstlast{
                     color: var(--date_multi_func-selectColor);
                 }
                 /* 范围间样式 */
-                .date_multi_popup .date_list p.select_period{
+                .date_multi_popup .date_list .select_period{
                     color: var(--date_multi_func-tranColor);
                 }
-                .date_multi_popup .date_list p.select_period::after,
-                .date_multi_popup .date_list p.select_firstlast::after
+                .date_multi_popup .date_list .select_period p::after,
+                .date_multi_popup .date_list .select_firstlast p::after
                 {
                     position: absolute;
                     content: "";
@@ -403,16 +422,16 @@
                     z-index: -2;
                     background-color: var(--date_multi_func-tranBg);
                 }
-                .date_multi_popup .date_list p.select_firstlast::after{
+                .date_multi_popup .date_list .select_firstlast p::after{
                     width: 50%;
                     opacity: 0;
                 }
                 /* 闭合样式 */
-                .date_multi_popup .date_list p.select_first::after,
-                .date_multi_popup .date_list p.select_last::after{
+                .date_multi_popup .date_list .select_first p::after,
+                .date_multi_popup .date_list .select_last p::after{
                     opacity: 1;
                 }
-                .date_multi_popup .date_list p.select_first::after{
+                .date_multi_popup .date_list .select_first p::after{
                     right:0;
                     left:auto;
                 }
@@ -478,6 +497,7 @@
             try {
                 // 时间范围，不考虑 指定日期
                 if (this.options.type != 2) {
+                    let isModifyCss = false;//是否修改css，如果有文本，那么选中样式得圆角就必须低于10
                     if (this.options.appointTime.length) {
                         let list = [];
                         // 组装数据
@@ -489,11 +509,12 @@
                                 appjson = this.getYearsDay(item);
                             }
 
-                            // if (item.text) {
-                            //     appjson['text'] = item.text
-                            // } else {
-                            //     appjson['text'] = "";
-                            // }
+                            if (item.text) {
+                                appjson['text'] = item.text;
+                                isModifyCss = true;
+                            } else {
+                                appjson['text'] = "";
+                            }
                             list.push(appjson);
                         }
                         // 排序
@@ -510,12 +531,12 @@
                             list.length >= 2 ? max = list[list.length - 1] : max = min;
 
                             // 判断 如果 第一个的时间 比 最小时间 小，那么 最小时间就设置成 第一个时间
-                            if (min.date.timestamp < minTimeJson.timestamp) {
-                                minTimeJson = min.date;
+                            if (min.timestamp < minTimeJson.timestamp) {
+                                minTimeJson = min;
                             }
                             // 判断 最后个时间 是否 小于 最大时间
-                            if (max.date.timestamp > maxTimeJson.timestamp) {
-                                maxTimeJson = max.date;
+                            if (max.timestamp > maxTimeJson.timestamp) {
+                                maxTimeJson = max;
                             }
                         }
                     } else if (this.options.appointOn.length) {
@@ -530,11 +551,12 @@
                                 nojson = this.getYearsDay(item);
                             }
 
-                            // if (item.text) {
-                            //     nojson['text'] = item.text
-                            // } else {
-                            //     nojson['text'] = "";
-                            // }
+                            if (item.text) {
+                                nojson['text'] = item.text;
+                                isModifyCss = true;
+                            } else {
+                                nojson['text'] = "";
+                            }
                             list.push(nojson);
                         }
                         // 排序
@@ -543,10 +565,12 @@
                         })
                         this.appointOnArr = list;
                     }
-                    // 判断是否有 不可选日期
+                    // 判断是否需要修改 css
+                    if (isModifyCss) {
+                        this.modifyCssRadius()
+                    }
                 }
             } catch (err) { }
-
             // 保存
             this.minTimeJson = minTimeJson;
             this.maxTimeJson = maxTimeJson;
@@ -713,6 +737,7 @@
             // 循环次数 = 当前天数 + 1号星期(前面空白站位)
             let num = days + oneweek;
             for (let i = 0; i < num; i++) {
+                let div = document.createElement("div");
                 let p = document.createElement("p");
                 // 在1号位置 开始塞入日期
                 if (i >= oneweek) {
@@ -722,28 +747,29 @@
                     let isFind = onSelects.find(item => (item == today || item.today == today));
                     if (isFind) {
                         // 不可选，添加类
-                        p.classList.add("on_select");
+                        div.classList.add("on_select");
                     } else {
                         // 可选
                         // 设置 开始选中 结束选中样式
-                        this.setFirstEndStyle(p, i);
+                        this.setFirstEndStyle(div, i);
                         // 监听点击事件
-                        p.onclick = (e) => {
-                            this.dateClick(e)
+                        div.onclick = function () {
+                            _this.dateClick(this)
                         }
                         // 获取 当前日期 是否是 指定日期
-                        // isFind = apppintDate.find(item => (item == today || item.today == today))
+                        isFind = apppintDate.find(item => (item == today || item.today == today))
                     }
-                    // // 判断 是否需要添加文本
-                    // if (isFind && isFind.text) {
-                    //     let span = document.createElement("span");
-                    //     span.innerHTML = isFind.text;
-                    //     p.append(span)
-                    // }
+                    // 判断 是否需要添加文本
+                    if (isFind && isFind.text) {
+                        let span = document.createElement("span");
+                        span.innerHTML = isFind.text;
+                        div.append(span)
+                    }
                 }
                 // 添加索引
-                p.setAttribute("index", i);
-                date_list.append(p);
+                div.setAttribute("index", i);
+                div.append(p);
+                date_list.append(div);
             }
             // 塞入
             this.dateMultiEles.date_multi_con.append(date_list);
@@ -902,18 +928,22 @@
         }
         // 日期 点击事件
         dateClick(e) {
+            let p = e.getElementsByTagName("p")[0];
+            let text = e.getElementsByTagName("span")[0] ? e.getElementsByTagName("span")[0].innerText : "";
+
             //当前年月
             let { year, month } = this.currYears;
-            let day = Number(e.target.innerText);
+            let day = Number(p.innerText);
             let timeJson = {
                 year: year,//年
                 month: month,//月
                 day: day,//日
                 time: year + this.options.backFormat + month + this.options.backFormat + day,//时间字符串
-                timestamp: new Date(`${year}.${month}.${day}`).getTime()//时间戳
+                timestamp: new Date(`${year}.${month}.${day}`).getTime(),//时间戳
+                text: text,//文本
             }
             // 给当前添加类
-            e.target.classList.add("select_firstlast");
+            e.classList.add("select_firstlast");
 
             // 单选
             if (this.options.type == 0) {
@@ -922,7 +952,7 @@
                 // 判断是否选择了，选了，就删除类
                 if (this.selectObj.length) this.selectObj[0].classList.remove("select_firstlast");
                 // 保存
-                this.selectObj = [e.target];
+                this.selectObj = [e];
                 // 保存时间
                 this.selectTimes = [timeJson];
                 return;
@@ -940,7 +970,7 @@
                     this.selectTimes.splice(index, 1)
                 } else {
                     // 保存
-                    this.selectObj.push(e.target);
+                    this.selectObj.push(e);
                     // 保存时间
                     this.selectTimes.push(timeJson);
                 }
@@ -965,12 +995,12 @@
                 if (!this.selectTimes.length) {
                     this.selectTimes = [timeJson]
                     // 保存
-                    this.selectObj = [e.target];
+                    this.selectObj = [e];
                     return;
                 }
 
                 // 第二次
-                this.selectObj.push(e.target);
+                this.selectObj.push(e);
                 this.selectTimes.push(timeJson)
 
                 // 判断 开始和结束 是否取反(结束时间比开始时间小)
@@ -998,7 +1028,7 @@
             this.setSectionStyle();
         }
         // 重新设置 开始选中 结束选中样式
-        setFirstEndStyle(p, i) {
+        setFirstEndStyle(div, i) {
             if (!(this.selectTimes.length >= 2) || !this.selectObj.length) return;
             // 判断 当前年月 是否是 选择元素的年月,并且索引对应
             //当前年月
@@ -1008,18 +1038,18 @@
                 // 开始
                 index = Number(this.selectObj[0].getAttribute("index"))
                 if (i == index) {
-                    p.classList.add("select_firstlast");
+                    div.classList.add("select_firstlast");
                     // 重新 赋值
-                    this.selectObj[0] = p;
+                    this.selectObj[0] = div;
                 }
             }
             if (year == this.selectTimes[1].year && month == this.selectTimes[1].month) {
                 // 结束
                 index = Number(this.selectObj[1].getAttribute("index"))
                 if (i == index) {
-                    p.classList.add("select_firstlast");
+                    div.classList.add("select_firstlast");
                     // 重新 赋值
-                    this.selectObj[1] = p;
+                    this.selectObj[1] = div;
                 }
             }
         }

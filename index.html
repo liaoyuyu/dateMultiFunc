@@ -63,6 +63,7 @@
         <p onclick="multipleDate()">多选</p>
         <p onclick="dateMulti()">时间范围</p>
         <p onclick="appointDate()">指定日期</p>
+        <p onclick="appointDateText()">指定日期带文本</p>
         <p onclick="appointnoDate()">指定不可选日期</p>
     </div>
     <p>内容</p>
@@ -158,13 +159,31 @@
         });
         dateMulti.show();
     }
+    // 指定日期带文本
+    function appointDateText() {
+        let dateMulti = new dateMultiFunc({
+            type: 1,
+            minTime: 0,
+            maxTime: 0,
+            appointTime: [{ date: "2022.7.1", text: "111" }, { date: "2022.7.5", text: "555" }, { date: "2022.7.8", text: "888" }, { date: "2022.7.20", text: "2020" }],
+            cancelFunc: () => {
+                console.log("取消")
+            },
+            confirmFunc: (res) => {
+                console.log("确认")
+                console.log(res)
+                listCon(res, 0)
+            }
+        });
+        dateMulti.show();
+    }
     // 指定 不可选日期
     function appointnoDate() {
         let dateMulti = new dateMultiFunc({
             type: 1,
             minTime: "2022.7.1",
             maxTime: 0,
-            appointOn: [{ date: "2022.7.1" }, { date: "2022.7.5" }, { date: "2022.7.8" }, { date: "2022.7.20" }],
+            appointOn: [{ date: "2022.7.1", text: "111" }, { date: "2022.7.5", text: "555" }, { date: "2022.7.8", text: "888" }, { date: "2022.7.20", text: "2020" }],
             cancelFunc: () => {
                 console.log("取消")
             },

@@ -43,7 +43,7 @@ background | 内容的背景颜色     | color |   #ffffff   | 颜色值
 opacity | 遮罩的透明度     | Number |   0.7   | 0-1
 selectBg | 选中时间的背景颜色     | color |   #409EFE   | 颜色值
 selectColor | 选中时间的文字颜色     | color |   #ffffff   | 颜色值
-selectRadius | 选中时间的圆角     | Number |   100   |  0 - 100，百分比
+selectRadius | 选中时间的圆角     | Number |   100   |  0 - 100，百分比；如果设置了文本，那么 圆角最大 10%
 tranBg | 过渡背景颜色    | color |   #A0CFFF   |  颜色值，type为2有效，选择的开始和结束时间之间的元素的背景颜色
 tranColor | 过渡文字颜色     | color |   #333333   |  颜色值，type为2有效，选择的开始和结束时间之间的元素的文字颜色
 title | 标题     | String |   选择时间   |  
@@ -55,17 +55,36 @@ isShow | 是否初始化完成就自动显示     | Boolean |   false  | true,fa
 ||||  优先级: (指定日期  >  指定不可选日期)(type=2无效) > 最大最小时间  >  默认时间
 ||||    指定日期如果不在最大最小时间范围中，最大最小时间会自动设置成 指定日期中的最大最小时间
 ||||    最大最小时间范围 没 包含 默认时间，默认时间会自动设置成最小时间
-appointTime | 指定可选日期     | Array |   []  | type 0  1 有效，字符串数组 和 json数组  列:["2022.7.1","2020.7.3"]  [{date:"2022.7.1"},{date:"2022.7.2"}]
+appointTime | 指定可选日期     | Array |   []  | type 0  1 有效，字符串数组 和 json数组(可带上文本)  列:["2022.7.1","2020.7.3"]  [{date:"2022.7.1"},{date:"2022.7.2"}]
 appointOn | 指定不可选日期     | Array |   []  | 同上
 minTime | 可选最小时间     | Number \| String |  ""  |  Number：表示年数，默认时间的多少年前。<br/>String：不写天数，表示当月1号
 maxTime | 可选最大时间     | Number \| String |  ""  |  同上
 defaultYears | 默认打开显示的年月     | String \| Date |  ""  |  时间字符串 或 时间
 |||| 事件参数
 cancelFunc | 取消回调     | function |  () => { }  |  cancelFunc: () => {console.log("取消")}
-confirmFunc | 确认回调     | function |  (res) => { }  |  confirmFunc: (res) => {console.log("确认")}<br/> res 为 数组；type为2是返回的是 statrTime 和 endTime 的 json
+confirmFunc | 确认回调     | function |  (res) => { }  |  confirmFunc: (res) => {console.log("确认")}，详见 res值
 
 
 
+<br/>
+<br/>
+<br/>
+
+
+### res值
+
+字段名 |  描述
+:------ | :------
+year | 年份
+month| 月份
+day| 日
+time| 时间字符串，根据 backFormat 参数拼接， 如："2022.7.4"
+timestamp| 时间戳（ms）
+text| 文本
+
+<br/>
+<br/>
+<br/>
 
 ### 4、可用方法
 

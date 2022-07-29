@@ -28,7 +28,7 @@
                 isShow: false,//是否立即显示
 
                 // 优先级: (指定日期  >  指定不可选日期)(时间范围类型无效) > 最大最小时间  >  默认时间
-                appointTime: [],//指定日期可选, type 0  1 有效， 字符串数组 和 json数组  列:["2022.7.1","2020.7.3"]  [{date:"2022.7.1",text:"111"},{date:"2022.7.2",text:"222"}]
+                appointTime: [],//指定日期可选, type 0  1 有效， 字符串数组 和 json数组  列:["2022.7.1","2020.7.3"]  {date:"2022.7.1"},{date:"2022.7.2"}  // 带文本未开发[{date:"2022.7.1",text:"111"},{date:"2022.7.2",text:"222"}]
                 appointOn: [],//指定不可选日期,同上
                 // 数字：表示 默认时间的 前后多少年（1表示默认时间的上一年为可选时间范围）
                 // 0 表示  当前默认时间,如果不写，表示为默认时间的前后100年 
@@ -350,6 +350,17 @@
                     z-index: 2;
                     transition: all 0.1s;
                 }
+                /* 文本 */
+                .date_multi_popup .date_list p span{
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    text-align: center;
+                    font-size: 8px;
+                    line-height: 1;
+                    z-index: 0,
+                }
                 /* 不可选样式 */
                 .date_multi_popup .date_list p.on_select{
                     opacity: 0.3;
@@ -471,23 +482,23 @@
                         let list = [];
                         // 组装数据
                         for (const item of this.options.appointTime) {
-                            let appjson = { date: "", text: "" }
+                            let appjson = {}
                             if (item.date) {
-                                appjson.date = this.getYearsDay(item.date);
+                                appjson = this.getYearsDay(item.date);
                             } else {
-                                appjson.date = this.getYearsDay(item);
+                                appjson = this.getYearsDay(item);
                             }
 
-                            if (item.text) {
-                                appjson.text = item.text
-                            } else {
-                                appjson.text = "";
-                            }
+                            // if (item.text) {
+                            //     appjson['text'] = item.text
+                            // } else {
+                            //     appjson['text'] = "";
+                            // }
                             list.push(appjson);
                         }
                         // 排序
                         list.sort((a, b) => {
-                            return a.date.timestamp - b.date.timestamp;
+                            return a.timestamp - b.timestamp;
                         })
                         this.appointTimeArr = list;
 
@@ -512,23 +523,23 @@
                         let list = [];
                         // 组装数据
                         for (const item of this.options.appointOn) {
-                            let nojson = { date: "", text: "" }
+                            let nojson = {}
                             if (item.date) {
-                                nojson.date = this.getYearsDay(item.date);
+                                nojson = this.getYearsDay(item.date);
                             } else {
-                                nojson.date = this.getYearsDay(item);
+                                nojson = this.getYearsDay(item);
                             }
 
-                            if (item.text) {
-                                nojson.text = item.text
-                            } else {
-                                nojson.text = "";
-                            }
+                            // if (item.text) {
+                            //     nojson['text'] = item.text
+                            // } else {
+                            //     nojson['text'] = "";
+                            // }
                             list.push(nojson);
                         }
                         // 排序
                         list.sort((a, b) => {
-                            return a.date.timestamp - b.date.timestamp;
+                            return a.timestamp - b.timestamp;
                         })
                         this.appointOnArr = list;
                     }
@@ -673,57 +684,31 @@
 
             // 当前 时间
             let { year, month, days, oneweek } = this.currYears;
-            // 最大最小区间
+
+            // 设置 是否可以继续点击上月下月
             let minTimeJson = this.minTimeJson;
             let maxTimeJson = this.maxTimeJson;
-            let today = [];//几号
-            let type = [];  // 1:表示几号之前   2:表示几号几后 
             // 判断当前时间是否在 最小时间 月
             if (year == minTimeJson.year && month == minTimeJson.month) {
-                // today 之前的时候都不可选
-                type[0] = 1;
-                today[0] = minTimeJson.today;
                 // 前面的时间不可选了
                 this.dateMultiEles.prev_month.style.display = "none";
             } else {
                 this.dateMultiEles.prev_month.style.display = "block";
             }
-
             if (year == maxTimeJson.year && month == maxTimeJson.month) {
-                // today 之后的时间都不可选
-                type[1] = 2;
-                today[1] = maxTimeJson.today;
                 // 后面的时间不可选了
                 this.dateMultiEles.next_month.style.display = "none";
             } else {
                 this.dateMultiEles.next_month.style.display = "block";
             }
 
-            // 不是范围选择，并且 有 指定日期
-            let currAppoin = [];// 当前月的指定日期
-            if (this.options.type != 2 && this.appointTimeArr.length) {
-                // 判断 指定日期 是否在当前月
-                for (let i = 0; i < this.appointTimeArr.length; i++) {
-                    if (this.appointTimeArr[i].date.year == year && this.appointTimeArr[i].date.month == month) {
-                        currAppoin.push(this.appointTimeArr[i].date.today);
-                        // 有指定日期，就去掉 区间判断
-                        type = [];
-                        today = [];
-                    }
-                }
-            }
-            // 不可选日期
-            let noAppoin = [];
-            if (this.options.type != 2 && !this.appointTimeArr.length) {
-                // 判断 不可选日期 是否在当前月
-                for (let i = 0; i < this.appointOnArr.length; i++) {
-                    if (this.appointOnArr[i].date.year == year && this.appointOnArr[i].date.month == month) {
-                        noAppoin.push(this.appointOnArr[i].date.today);
-                    }
-                }
-            }
 
-
+            // 获取 不可选和可选日期
+            let arrList = this.getNoSelectDate();
+            // 获取不可选日期
+            let onSelects = arrList.onSelects;
+            // 获取可选日期（只有指定日期才有）
+            let apppintDate = arrList.apppintDate;
 
             // 循环次数 = 当前天数 + 1号星期(前面空白站位)
             let num = days + oneweek;
@@ -731,15 +716,13 @@
                 let p = document.createElement("p");
                 // 在1号位置 开始塞入日期
                 if (i >= oneweek) {
-                    let text = i - oneweek + 1;
-                    p.innerHTML = text;
-                    // 判断 最大日期 和 最小日期 的开始和截至
-                    // 判断是否是指定日期
-                    if ((type.indexOf(1) >= 0 && today[0] > text) || (type.indexOf(2) >= 0 && today[1] < text) ||
-                        (currAppoin.indexOf(Number(text)) == -1 && currAppoin.length) ||
-                        (noAppoin.indexOf(Number(text)) >= 0 && noAppoin.length)) {
-                        // 可选开始在当前月
-                        p.classList.add("on_select")
+                    let today = i - oneweek + 1;
+                    p.innerHTML = today;
+                    // 判断 当前日期，是否是不可选日期
+                    let isFind = onSelects.find(item => (item == today || item.today == today));
+                    if (isFind) {
+                        // 不可选，添加类
+                        p.classList.add("on_select");
                     } else {
                         // 可选
                         // 设置 开始选中 结束选中样式
@@ -748,7 +731,15 @@
                         p.onclick = (e) => {
                             this.dateClick(e)
                         }
+                        // 获取 当前日期 是否是 指定日期
+                        // isFind = apppintDate.find(item => (item == today || item.today == today))
                     }
+                    // // 判断 是否需要添加文本
+                    // if (isFind && isFind.text) {
+                    //     let span = document.createElement("span");
+                    //     span.innerHTML = isFind.text;
+                    //     p.append(span)
+                    // }
                 }
                 // 添加索引
                 p.setAttribute("index", i);
@@ -760,6 +751,56 @@
             // 设置选择过渡样式
             this.setSectionStyle();
         }
+        // 获取 不可选日期
+        getNoSelectDate() {
+            // 当前 时间
+            let { year, month, days } = this.currYears;
+            // 不可选日期
+            let onSelects = [];
+            // 可选日期(只有指定日期才有返回)
+            let apppintDate = []
+            // 判断是否有 指定日期 // 如果是 指定日期，那么 最小最大时间都不需要判断
+            if (this.options.type != 2 && this.appointTimeArr.length) {
+                // 获取 当前月 的 可选时间
+                apppintDate = this.appointTimeArr.filter(item => item.year == year && item.month == month);
+
+                // 循环天数，判断 当前日期 是否 不是 可选日期
+                for (let i = 1; i <= days; i++) {
+                    let isFind = apppintDate.find(item => item.today == i);
+                    // 找不到，才加入 不可选日期
+                    if (!isFind) onSelects.push(i);
+                }
+            } else {
+                // 最大最小区间
+                let minTimeJson = this.minTimeJson;
+                let maxTimeJson = this.maxTimeJson;
+
+                // 当前月 在 最小月份上
+                if (year == minTimeJson.year && month == minTimeJson.month) {
+                    // 循环最小日期，最小日期 之前的 日期都不可选
+                    for (let i = 1; i < minTimeJson.today; i++) {
+                        onSelects.push(i);
+                    }
+                }
+                // 当前月 在 最大月份上
+                if (year == maxTimeJson.year && month == maxTimeJson.month) {
+                    // 最大日期 之后的 日期都不可选
+                    for (let i = maxTimeJson.today + 1; i <= days; i++) {
+                        onSelects.push(i);
+                    }
+                }
+
+                // 然后 在 判断 不可选日期
+                if (this.options.type != 2 && this.appointOnArr.length) {
+                    // 获取 当前月 的 不可选时间
+                    let list = this.appointOnArr.filter(item => item.year == year && item.month == month);
+                    onSelects.push(...list);
+                }
+            }
+
+            return { onSelects, apppintDate };
+        }
+
 
         // 初始化事件
         initEvent() {
@@ -771,7 +812,7 @@
             this.dateMultiEles.confirm_btn.addEventListener("click", this.confirmFunc, false)
 
             // 上一月按钮点击
-            this.dateMultiEles.prev_month.addEventListener("click", this.prevNextMonthFunc, false)
+            this.dateMultiEles.prev_month.addEventListener("click", this.prevMonthClick, false)
             // 下一月按钮点击
             this.dateMultiEles.next_month.addEventListener("click", this.nextMonthClick, false)
         }
@@ -785,7 +826,7 @@
             this.dateMultiEles.confirm_btn.removeEventListener("click", this.confirmFunc, false)
 
             // 上一月按钮点击
-            this.dateMultiEles.prev_month.removeEventListener("click", this.prevNextMonthFunc, false)
+            this.dateMultiEles.prev_month.removeEventListener("click", this.prevMonthClick, false)
             // 下一月按钮点击
             this.dateMultiEles.next_month.removeEventListener("click", this.nextMonthClick, false)
         }
@@ -820,6 +861,10 @@
             _this.options.confirmFunc(res);
             // 关闭
             _this.close();
+        }
+        // 上个月点击
+        prevMonthClick() {
+            _this.prevNextMonthFunc();
         }
         // 下一月点击
         nextMonthClick() {

@@ -1,5 +1,5 @@
 
-// 时间 选择 插件  es6版
+// 时间 选择 插件  ,不支持 ie
 ; (function (win, undefined) {
     let _this = null;
     // 方法主体，不暴露
@@ -73,7 +73,7 @@
             // 背景
             let date_multi_bg = document.createElement("div");
             date_multi_bg.className = "date_multi_bg";
-            date_multi_popup.append(date_multi_bg);
+            date_multi_popup.appendChild(date_multi_bg);
 
             // 内容盒子
             let date_multi_inner = document.createElement("div");
@@ -86,18 +86,18 @@
             if (this.options.isCancel) {
                 cancel_btn = document.createElement("span")
                 cancel_btn.innerHTML = this.options.cancelText;
-                date_multi_title.append(cancel_btn);
+                date_multi_title.appendChild(cancel_btn);
             }
             // 标题
             let tp = document.createElement("p");
             tp.innerHTML = this.options.title;
-            date_multi_title.append(tp);
+            date_multi_title.appendChild(tp);
             // 确认按钮
             let confirm_btn = document.createElement("span")
             confirm_btn.innerHTML = this.options.confirmText;
-            date_multi_title.append(confirm_btn);
+            date_multi_title.appendChild(confirm_btn);
             // 塞入标题区
-            date_multi_inner.append(date_multi_title);
+            date_multi_inner.appendChild(date_multi_title);
 
             // 时间 选择 标题
             let date_multi_time = document.createElement("div");
@@ -110,19 +110,21 @@
             // 塞入 时间 和 按钮
             let prev_month = document.createElement("span");//上月
             let next_month = document.createElement("span");//下月
-            date_multi_time.append(prev_month, time_tit, next_month);
+            date_multi_time.appendChild(prev_month);
+            date_multi_time.appendChild(time_tit);
+            date_multi_time.appendChild(next_month);
             // 塞入时间标题
-            date_multi_inner.append(date_multi_time);
+            date_multi_inner.appendChild(date_multi_time);
 
             // 内容
             let date_multi_con = document.createElement("div");
             date_multi_con.className = "date_multi_con";
             // 塞入周期
-            date_multi_con.append(this.createDateWeek())
+            date_multi_con.appendChild(this.createDateWeek())
             // 塞入内容
-            date_multi_inner.append(date_multi_con);
-            date_multi_popup.append(date_multi_inner);
-            document.body.append(date_multi_popup);
+            date_multi_inner.appendChild(date_multi_con);
+            date_multi_popup.appendChild(date_multi_inner);
+            document.body.appendChild(date_multi_popup);
 
             //保存 元素对象
             let dateMultiEles = {
@@ -215,7 +217,7 @@
                     --date_multi_func-selectRadius:${this.options.selectRadius}%;
                     --date_multi_func-color:${this.options.color};
                     --date_multi_func-background:${this.options.background};
-                    --date_multi_func-opacity:rgba(0, 0, 0, ${this.options.opacity});
+                    --date_multi_func-opacity:${this.options.opacity};
                 }
                 .date_multi_popup,.date_multi_popup *{
                     margin: 0;
@@ -226,9 +228,7 @@
                     z-index: 2000;
                     width: 100%;
                     height: 100%;
-                    background: var(--date_multi_func-opacity);
                     font-size: 13px;
-                    color: var(--date_multi_func-color);
                     top: 0;
                     left: 0;
                     display: flex;
@@ -238,6 +238,8 @@
                     transition: all 0.2s;
                     opacity: 0;
                     visibility: hidden;
+                    color: ${this.options.color};
+                    color: var(--date_multi_func-color);
                 }
                 .date_multi_show{
                     opacity: 1;
@@ -250,18 +252,22 @@
                     left: 0;
                     width: 100%;
                     height: 100%;
+                    background: #000;
+                    opacity: ${this.options.opacity};
+                    opacity: var(--date_multi_func-opacity);
                 }
                 .date_multi_popup .date_multi_inner{
                     position: relative;
                     z-index: 5;
                     width: 100%;
-                    background-color: var(--date_multi_func-background);
                     min-height: 20%;
                     padding-top: 6px;
                     box-shadow: 0px 0px 3px -1px #999;
                     transition: all 0.3s 0.2s;
                     transform: translateY(100%);
                     opacity: 0;
+                    background-color: ${this.options.background};
+                    background-color: var(--date_multi_func-background);
                 }
                 .date_multi_show .date_multi_inner{
                     transform: translateY(0);
@@ -304,17 +310,19 @@
                     width: 0;
                     height: 0;
                     border-left: 6px solid transparent;
-                    border-right: 6px solid var(--date_multi_func-color);
                     border-top: 4px solid transparent;
                     border-bottom: 4px solid transparent;
                     left: 50%;
                     margin-left: -4px;
                     top: 50%;
                     margin-top: -6px;
+                    border-right: 6px solid ${this.options.color};
+                    border-right: 6px solid var(--date_multi_func-color);
                 }
                 .date_multi_popup .date_multi_time span:last-child::after{
-                    border-left: 6px solid var(--date_multi_func-color);
                     border-right: 6px solid transparent;
+                    border-left: 6px solid ${this.options.color};
+                    border-left: 6px solid var(--date_multi_func-color);
                 }
                 
                 .date_multi_popup .date_multi_con{
@@ -398,14 +406,18 @@
                     transform: translateY(-50%);
                     left: 15%;
                     z-index: -1;
+                    border-radius: ${this.options.selectRadius};
+                    background-color: ${this.options.selectBg};
                     border-radius: var(--date_multi_func-selectRadius);
                     background-color: var(--date_multi_func-selectBg);
                 }
                 .date_multi_popup .date_list .select_firstlast{
+                    color: ${this.options.selectColor};
                     color: var(--date_multi_func-selectColor);
                 }
                 /* 范围间样式 */
                 .date_multi_popup .date_list .select_period{
+                    color: ${this.options.tranColor};
                     color: var(--date_multi_func-tranColor);
                 }
                 .date_multi_popup .date_list .select_period p::after,
@@ -420,6 +432,7 @@
                     transform: translateY(-50%);
                     left: 0;
                     z-index: -2;
+                    background-color: ${this.options.tranBg};
                     background-color: var(--date_multi_func-tranBg);
                 }
                 .date_multi_popup .date_list .select_firstlast p::after{
@@ -700,7 +713,7 @@
                         break;
                 }
                 p.innerHTML = inner;
-                date_week.append(p)
+                date_week.appendChild(p)
             }
             return date_week;
         },
@@ -748,7 +761,7 @@
                     let today = i - oneweek + 1;
                     p.innerHTML = today;
                     // 判断 当前日期，是否是不可选日期
-                    let isFind = onSelects.find(item => (item == today || item.today == today));
+                    let isFind = onSelects.filter(item => (item == today || item.today == today))[0];
                     if (isFind) {
                         // 不可选，添加类
                         div.classList.add("on_select");
@@ -761,22 +774,22 @@
                             _this.dateClick(this)
                         }
                         // 获取 当前日期 是否是 指定日期
-                        isFind = apppintDate.find(item => (item == today || item.today == today))
+                        isFind = apppintDate.filter(item => (item == today || item.today == today))[0]
                     }
                     // 判断 是否需要添加文本
                     if (isFind && isFind.text) {
                         let span = document.createElement("span");
                         span.innerHTML = isFind.text;
-                        div.append(span)
+                        div.appendChild(span)
                     }
                 }
                 // 添加索引
                 div.setAttribute("index", i);
-                div.append(p);
-                date_list.append(div);
+                div.appendChild(p);
+                date_list.appendChild(div);
             }
             // 塞入
-            this.dateMultiEles.date_multi_con.append(date_list);
+            this.dateMultiEles.date_multi_con.appendChild(date_list);
             this.dateMultiEles['date_list'] = date_list;//保存
             // 设置选择过渡样式
             this.setSectionStyle();
@@ -796,7 +809,7 @@
 
                 // 循环天数，判断 当前日期 是否 不是 可选日期
                 for (let i = 1; i <= days; i++) {
-                    let isFind = apppintDate.find(item => item.today == i);
+                    let isFind = apppintDate.some(item => item.today == i);
                     // 找不到，才加入 不可选日期
                     if (!isFind) onSelects.push(i);
                 }
@@ -818,7 +831,7 @@
                     // 循环最小日期，最小日期 之前的 日期都不可选
                     for (let i = 1; i < minTimeJson.today; i++) {
                         // 判断 当前日期 是否已经在不可选中了
-                        if (!onSelects.find(item => (item.today == i))) {
+                        if (!onSelects.some(item => (item.today == i))) {
                             // 没找到，才塞入
                             onSelects.push(i);
                         }
@@ -829,7 +842,7 @@
                     // 最大日期 之后的 日期都不可选
                     for (let i = maxTimeJson.today + 1; i <= days; i++) {
                         // 判断 当前日期 是否已经在不可选中了
-                        if (!onSelects.find(item => (item.today == i))) {
+                        if (!onSelects.some(item => (item.today == i))) {
                             // 没找到，才塞入
                             onSelects.push(i);
                         }
@@ -912,7 +925,7 @@
         // 上一月 下一月 点击 type:false 上一月
         prevNextMonthFunc(type) {
             // 当前年月
-            let { year, month } = _this.currYears;
+            let { year, month, today } = _this.currYears;
 
             // 判断是上一月还是下一月
             if (type) {
@@ -932,7 +945,7 @@
             }
 
             // 保存时间
-            _this.getYearsDay(`${year}/${month}`, true);
+            _this.getYearsDay(`${year}/${month}/${today}`, true);
             // 重新生成 列表
             _this.dateMultiEles.date_list.remove();//删除
             _this.createDateList();

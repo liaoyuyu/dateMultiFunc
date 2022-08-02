@@ -13,10 +13,8 @@
 使用:
 ```js
 let dateMulti = new dateMultiFunc({
-    defaultYears: "",
-    minTime: "",
-    maxTime: 0,
-    appointOn: ["2022.7.3", "2022.7.10"],
+    minTime: 1,
+    maxTime: 1,
     isShow: true,
     type: 1,
     cancelFunc: () => {
@@ -88,6 +86,7 @@ day| 日
 time| 时间字符串，根据 backFormat 参数拼接， 如："2022.7.4"
 timestamp| 时间戳（ms）
 text| 文本
+
 
 
 

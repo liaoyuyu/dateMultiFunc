@@ -532,6 +532,8 @@
                             // 判断 如果 第一个的时间 比 最小时间 小，那么 最小时间就设置成 第一个时间
                             if (min.timestamp < minTimeJson.timestamp) {
                                 minTimeJson = min;
+                                // 并且，默认时间也改成最小时间
+                                this.options.defaultYears = min.year + "." + min.month + "." + min.today
                             }
                             // 判断 最后个时间 是否 小于 最大时间
                             if (max.timestamp > maxTimeJson.timestamp) {
@@ -733,6 +735,7 @@
             // 获取可选日期（只有指定日期才有）
             let apppintDate = arrList.apppintDate;
 
+
             // 循环次数 = 当前天数 + 1号星期(前面空白站位)
             let num = days + oneweek;
             for (let i = 0; i < num; i++) {
@@ -800,26 +803,35 @@
                 let minTimeJson = this.minTimeJson;
                 let maxTimeJson = this.maxTimeJson;
 
+                // 先判断 不可选日期
+                if (this.options.type != 2 && this.appointOnArr.length) {
+                    // 获取 当前月 的 不可选时间
+                    let list = this.appointOnArr.filter(item => item.year == year && item.month == month);
+                    onSelects.push(...list);
+                }
+
+                // 在判断
                 // 当前月 在 最小月份上
                 if (year == minTimeJson.year && month == minTimeJson.month) {
                     // 循环最小日期，最小日期 之前的 日期都不可选
                     for (let i = 1; i < minTimeJson.today; i++) {
-                        onSelects.push(i);
+                        // 判断 当前日期 是否已经在不可选中了
+                        if (!onSelects.find(item => (item.today == i))) {
+                            // 没找到，才塞入
+                            onSelects.push(i);
+                        }
                     }
                 }
                 // 当前月 在 最大月份上
                 if (year == maxTimeJson.year && month == maxTimeJson.month) {
                     // 最大日期 之后的 日期都不可选
                     for (let i = maxTimeJson.today + 1; i <= days; i++) {
-                        onSelects.push(i);
+                        // 判断 当前日期 是否已经在不可选中了
+                        if (!onSelects.find(item => (item.today == i))) {
+                            // 没找到，才塞入
+                            onSelects.push(i);
+                        }
                     }
-                }
-
-                // 然后 在 判断 不可选日期
-                if (this.options.type != 2 && this.appointOnArr.length) {
-                    // 获取 当前月 的 不可选时间
-                    let list = this.appointOnArr.filter(item => item.year == year && item.month == month);
-                    onSelects.push(...list);
                 }
             }
 

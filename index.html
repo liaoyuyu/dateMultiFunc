@@ -86,7 +86,8 @@
 
 </html>
 
-<script src="./dateMultiFunc.js"></script>
+
+<script type="text/javascript" src="dateMultiFunc.js"></script>
 
 <!-- 类型 -->
 <script>
@@ -94,10 +95,10 @@
     function singleDate() {
         let dateMulti = new dateMultiFunc({
             type: 0,
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
                 listCon(res, 0)
@@ -111,10 +112,10 @@
     function multipleDate() {
         let dateMulti = new dateMultiFunc({
             type: 1,
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
                 listCon(res, 1)
@@ -129,10 +130,10 @@
         let dateMulti = new dateMultiFunc({
             type: 2,
             maxTime: 0,
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
                 listCon(res, 2)
@@ -148,10 +149,10 @@
             minTime: "2022.6",
             maxTime: 1,
             appointTime: ["2022.6.2", "2022.7.5", "2022.7.10", "2022.7.15"],
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
                 listCon(res, 0)
@@ -166,10 +167,10 @@
             minTime: 0,
             maxTime: 0,
             appointTime: [{ date: "2022.7.1", text: "111" }, { date: "2022.7.5", text: "555" }, { date: "2022.7.8", text: "888" }, { date: "2022.7.20", text: "2020" }],
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
                 listCon(res, 0)
@@ -184,10 +185,10 @@
             minTime: "2022.7.1",
             maxTime: 0,
             appointOn: [{ date: "2022.7.1", text: "111" }, { date: "2022.7.5", text: "555" }, { date: "2022.7.8", text: "888" }, { date: "2022.7.20", text: "2020" }],
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
                 listCon(res, 0)
@@ -203,12 +204,12 @@
     function listCon(res, type) {
         let html = ''
         if (type == 2) {
-            html += `<p>开始时间：${JSON.stringify(res.statrTime)}</p>`
-            html += `<p>结束时间：${JSON.stringify(res.endTime)}</p>`
+            html += "<p>开始时间：" + JSON.stringify(res.statrTime) + "</p>"
+            html += "<p>结束时间：" + JSON.stringify(res.endTime) + "</p>"
         } else {
-            res.forEach(v => {
-                html += `<p>${JSON.stringify(v)}</p>`
-            });
+            for (let i = 0; i < res.length; i++) {
+                html += "<p>" + JSON.stringify(res[i]) + "</p>"
+            }
         }
         let list_con = document.querySelector(".list_con");
         list_con.innerHTML = html;
@@ -224,10 +225,10 @@
             type: 0,
             position: "top",
             radius: [0, 0, 10, 10],
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
             }
@@ -240,10 +241,10 @@
             type: 0,
             position: "center",
             radius: 10,
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
             }
@@ -256,10 +257,10 @@
             type: 0,
             position: "bottom",//默认
             radius: [10, 10, 0, 0],
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
             }
@@ -279,10 +280,10 @@
             background: "#ef8e29",
             color: "#fff",
             tranColor: "#fff",
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
             }
@@ -299,10 +300,10 @@
             selectBg: "#67C23A",
             tranColor: "#fff",
             tranBg: "#666",
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
             }
@@ -319,10 +320,10 @@
             selectBg: "#ffab2c",
             selectRadius: 8,
             tranBg: "#efd577",
-            cancelFunc: () => {
+            cancelFunc: function () {
                 console.log("取消")
             },
-            confirmFunc: (res) => {
+            confirmFunc: function (res) {
                 console.log("确认")
                 console.log(res)
             }

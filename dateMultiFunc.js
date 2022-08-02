@@ -205,7 +205,6 @@
         }
         // 生成 css 样式
         createdCss() {
-            console.log(this.options.selectRadius)
             let css = `
                 :root {
                     --date_multi_func-selectBg: ${this.options.selectBg};
@@ -1135,7 +1134,7 @@
                 this.selectPeriod = [];
             }
         }
-    }
+    };
 
     // 关键代码（单列模型）
     let dateFuncObj = null;
@@ -1147,30 +1146,30 @@
         }
         // 参数格式错误
         if (typeof options != "object") {
-            throw "参数格式错误！"
+            throw "参数格式错误！";
         }
         if (dateFuncObj) {
             // 已创建，销毁
             dateFuncObj.destroy();
         }
         // 创建
-        dateFuncObj = new dateMultiFunc(options)
-    }
+        dateFuncObj = new dateMultiFunc(options);
+    };
 
     // 打开方法
     dateMulti.prototype.show = function () {
         if (dateFuncObj) {
             dateFuncObj.show();
         } else {
-            throw "请先创建！"
+            throw "请先创建！";
         }
-    }
+    };
     // 销毁方法
     dateMulti.prototype.destroy = function () {
         if (dateFuncObj) {
             dateFuncObj.destroy();
         }
-    }
+    };
 
     // 抛出
     win.dateMultiFunc = dateMulti;

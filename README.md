@@ -33,7 +33,7 @@ let dateMulti = new dateMultiFunc({
 
 ### 3、参数说明
 
-参数名 | 参数作用 | 参数类型|默认值 | 描述
+参数名 | 参数作用 | 参数类型|默认值 | 描述/注意
 :------ | :------|:------:|:------:|:------:
 type | 类型 | Number        |0 | 0:单选  1:多选  2:时间范围
 position | 弹出位置 | String        |bottom | bottom, center, top
@@ -46,10 +46,10 @@ selectColor | 选中时间的文字颜色     | color |   #ffffff   | 颜色值
 selectRadius | 选中时间的圆角     | Number |   100   |  0 - 100，百分比；如果设置了文本，那么 圆角最大 10%
 tranBg | 过渡背景颜色    | color |   #A0CFFF   |  颜色值，type为2有效，选择的开始和结束时间之间的元素的背景颜色
 tranColor | 过渡文字颜色     | color |   #333333   |  颜色值，type为2有效，选择的开始和结束时间之间的元素的文字颜色
-title | 标题     | String |   选择时间   |  
+title | 标题     | String |   选择时间   |  -
 isCancel | 是否不显示取消按钮     | Boolean |   false   | true,false
-cancelText | 取消按钮文案     | String |   取消   | 
-confirmText | 确认按钮文案     | String |   确认   | 
+cancelText | 取消按钮文案     | String |   取消   | -
+confirmText | 确认按钮文案     | String |   确认   | -
 backFormat | 返回时间格式     | String |   .   |  返回时间的拼接字符
 isShow | 是否初始化完成就自动显示     | Boolean |   false  | true,false
 ||||  优先级: (指定日期  >  指定不可选日期)(type=2无效) > 最大最小时间  >  默认时间

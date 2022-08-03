@@ -228,7 +228,7 @@
                     --date_multi_func-selectColor: ${this.options.selectColor};
                     --date_multi_func-tranBg: ${this.options.tranBg};
                     --date_multi_func-tranColor: ${this.options.tranColor};
-                    --date_multi_func-selectRadius:${this.options.selectRadius}%;
+                    --date_multi_func-selectRadius:${this.options.selectRadius};
                     --date_multi_func-color:${this.options.color};
                     --date_multi_func-background:${this.options.background};
                     --date_multi_func-opacity:${this.options.opacity};
@@ -393,7 +393,7 @@
                 /* 文本 */
                 .date_multi_popup .date_list div span{
                     position: absolute;
-                    bottom: 1px;
+                    bottom: 2px;
                     left: 0;
                     width: 100%;
                     text-align: center;
@@ -420,9 +420,9 @@
                     transform: translateY(-50%);
                     left: 15%;
                     z-index: -1;
-                    border-radius: ${this.options.selectRadius};
+                    border-radius: ${this.options.selectRadius}%;
                     background-color: ${this.options.selectBg};
-                    border-radius: var(--date_multi_func-selectRadius);
+                    border-radius: var(--date_multi_func-selectRadius)%;
                     background-color: var(--date_multi_func-selectBg);
                 }
                 .date_multi_popup .date_list .select_firstlast{

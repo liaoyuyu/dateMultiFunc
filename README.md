@@ -4,11 +4,14 @@
 移动端-时间选择多功能插件；支持 单选，多选，时间范围，指定时间选择，不可选时间
 <!-- github 地址: [blog.gitee.com](https://blog.gitee.com)  -->
 
+<br/>
 
 
 ### 2、使用说明
 
 >引入： `<script src="./dateMultiFunc.js"></script>`
+
+<br/>
 
 使用:
 ```js
@@ -27,6 +30,17 @@ let dateMulti = new dateMultiFunc({
     }
 });
 ```
+
+<br/>
+<br/>
+
+
+### Date 问题（注意）
+    ie内核浏览器，时间格式请使用 "/" 和 "."，并写全年月日，最好不要用其他格式的时间，其他格式没优化
+
+
+<br/>
+<br/>
 
 
 
@@ -65,6 +79,7 @@ cancelFunc | 取消回调     | function |  () => { }  |  cancelFunc: () => {con
 confirmFunc | 确认回调     | function |  (res) => { }  |  confirmFunc: (res) => {console.log("确认")}，详见 res值
 
 
+<br/>
 
 
 
@@ -89,6 +104,8 @@ text| 文本
 
 
 
+<br/>
+<br/>
 
 
 

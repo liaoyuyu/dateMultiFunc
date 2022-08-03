@@ -164,7 +164,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             var _this2 = this;
 
             if (this.dateMultiEles.date_list) {
-                this.dateMultiEles.date_list.remove(); //删除
+                // 判断是否是ie
+                if (this.isIEOrIE11()) {
+                    this.dateMultiEles.date_list.removeNode(true);
+                } else {
+                    this.dateMultiEles.date_list.remove(); //删除
+                }
             }
             // 塞入 时间列表
             this.createDateList();
@@ -199,11 +204,20 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         // 销毁
         destroy: function destroy() {
             try {
-                // 删除 html
-                this.dateMultiEles.date_multi_popup.remove();
-                // 并且删除css
+                // 获取 css
                 var date_multi_func_css = document.getElementById("date_multi_func_css");
-                date_multi_func_css.remove();
+                // 判断是否是ie
+                if (this.isIEOrIE11()) {
+                    // 删除 html
+                    this.dateMultiEles.date_multi_popup.removeNode(true);
+                    // 并且删除css
+                    date_multi_func_css.removeNode(true);
+                } else {
+                    // 删除 html
+                    this.dateMultiEles.date_multi_popup.remove();
+                    // 并且删除css
+                    date_multi_func_css.remove();
+                }
 
                 // 移除事件
                 this.removeEvent();
@@ -242,6 +256,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
         // 转换 最大最小时间 和 指定日期
         transformOptionaTime: function transformOptionaTime() {
+            var _this3 = this;
+
             // 默认时间
             var defaultYears = this.getYearsDay(this.options.defaultYears);
             // 获取 最小时间 和 最大时间
@@ -271,45 +287,23 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                     if (this.options.appointTime.length) {
                         var list = [];
                         // 组装数据
-                        var _iteratorNormalCompletion = true;
-                        var _didIteratorError = false;
-                        var _iteratorError = undefined;
-
-                        try {
-                            for (var _iterator = this.options.appointTime[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                                var item = _step.value;
-
-                                var appjson = {};
-                                if (item.date) {
-                                    appjson = this.getYearsDay(item.date);
-                                } else {
-                                    appjson = this.getYearsDay(item);
-                                }
-
-                                if (item.text) {
-                                    appjson['text'] = item.text;
-                                    isModifyCss = true;
-                                } else {
-                                    appjson['text'] = "";
-                                }
-                                list.push(appjson);
+                        this.options.appointTime.forEach(function (item) {
+                            var appjson = {};
+                            if (item.date) {
+                                appjson = _this3.getYearsDay(item.date);
+                            } else {
+                                appjson = _this3.getYearsDay(item);
                             }
-                            // 排序
-                        } catch (err) {
-                            _didIteratorError = true;
-                            _iteratorError = err;
-                        } finally {
-                            try {
-                                if (!_iteratorNormalCompletion && _iterator.return) {
-                                    _iterator.return();
-                                }
-                            } finally {
-                                if (_didIteratorError) {
-                                    throw _iteratorError;
-                                }
-                            }
-                        }
 
+                            if (item.text) {
+                                appjson['text'] = item.text;
+                                isModifyCss = true;
+                            } else {
+                                appjson['text'] = "";
+                            }
+                            list.push(appjson);
+                        });
+                        // 排序
                         list.sort(function (a, b) {
                             return a.timestamp - b.timestamp;
                         });
@@ -337,45 +331,22 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                         // 不可选日期，只有 appointTime 没有才有效
                         var _list = [];
                         // 组装数据
-                        var _iteratorNormalCompletion2 = true;
-                        var _didIteratorError2 = false;
-                        var _iteratorError2 = undefined;
-
-                        try {
-                            for (var _iterator2 = this.options.appointOn[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                                var _item = _step2.value;
-
-                                var nojson = {};
-                                if (_item.date) {
-                                    nojson = this.getYearsDay(_item.date);
-                                } else {
-                                    nojson = this.getYearsDay(_item);
-                                }
-
-                                if (_item.text) {
-                                    nojson['text'] = _item.text;
-                                    isModifyCss = true;
-                                } else {
-                                    nojson['text'] = "";
-                                }
-                                _list.push(nojson);
+                        this.options.appointOn.forEach(function (item) {
+                            var nojson = {};
+                            if (item.date) {
+                                nojson = _this3.getYearsDay(item.date);
+                            } else {
+                                nojson = _this3.getYearsDay(item);
                             }
-                            // 排序
-                        } catch (err) {
-                            _didIteratorError2 = true;
-                            _iteratorError2 = err;
-                        } finally {
-                            try {
-                                if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                                    _iterator2.return();
-                                }
-                            } finally {
-                                if (_didIteratorError2) {
-                                    throw _iteratorError2;
-                                }
+                            if (item.text) {
+                                nojson['text'] = item.text;
+                                isModifyCss = true;
+                            } else {
+                                nojson['text'] = "";
                             }
-                        }
-
+                            _list.push(nojson);
+                        });
+                        // 排序
                         _list.sort(function (a, b) {
                             return a.timestamp - b.timestamp;
                         });
@@ -475,7 +446,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             var month = showTiem.getMonth() + 1; //获取当前月份(0-11,0代表1月),+1,1月就是1
             var today = showTiem.getDate(); //获取当前日(1-31)
             var currweek = showTiem.getDay(); //获取当前星期X(0-6,0代表星期天)
-            var timestamp = new Date(year + "." + month + "." + today).getTime(); //当前时间戳(凌晨时间00:00)
+            var timestamp = new Date(year + "/" + month + "/" + today).getTime(); //当前时间戳(凌晨时间00:00)
 
             // 0 代表 前一天
             var days = new Date(year, month, 0).getDate(); //天数 这里 month :代表下一个月,下一个月的前一天
@@ -533,7 +504,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
         // 生成 时间列表
         createDateList: function createDateList() {
-            var _this3 = this;
+            var _this4 = this;
 
             var date_list = document.createElement("div");
             date_list.className = "date_list";
@@ -590,7 +561,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                         } else {
                             // 可选
                             // 设置 开始选中 结束选中样式
-                            _this3.setFirstEndStyle(div, i);
+                            _this4.setFirstEndStyle(div, i);
                             // 监听点击事件
                             div.onclick = function () {
                                 _this.dateClick(this);
@@ -810,7 +781,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             // 保存时间
             _this.getYearsDay(year + "/" + month + "/" + today, true);
             // 重新生成 列表
-            _this.dateMultiEles.date_list.remove(); //删除
+            // 判断是否是ie
+            if (this.isIEOrIE11()) {
+                _this.dateMultiEles.date_list.removeNode(true);
+            } else {
+                _this.dateMultiEles.date_list.remove(); //删除
+            }
             _this.createDateList();
             // 修改标题
             _this.dateMultiEles.time_tit.innerHTML = year + "年" + month + "日";
@@ -832,7 +808,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 month: month, //月
                 day: day, //日
                 time: year + this.options.backFormat + month + this.options.backFormat + day, //时间字符串
-                timestamp: new Date(year + "." + month + "." + day).getTime(), //时间戳
+                timestamp: new Date(year + "/" + month + "/" + day).getTime(), //时间戳
                 text: text //文本
 
                 // 给当前添加类
@@ -854,9 +830,20 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             // 多选
             if (this.options.type == 1) {
                 // 判断 数组中 是否 已经选了，选过了，就取消选中
-                var index = this.selectTimes.findIndex(function (v) {
-                    return v.timestamp == timeJson.timestamp;
-                });
+                var index = -1;
+                if (this.isIEOrIE11()) {
+                    for (var i = 0; i < this.selectTimes.length; i++) {
+                        if (this.selectTimes[i].timestamp == timeJson.timestamp) {
+                            index = i;
+                            console.log(i);
+                            break;
+                        }
+                    }
+                } else {
+                    index = this.selectTimes.findIndex(function (v) {
+                        return v.timestamp == timeJson.timestamp;
+                    });
+                }
                 if (index >= 0) {
                     // 取消
                     this.selectObj[index].classList.remove("select_firstlast");
@@ -877,8 +864,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 // 判断是否 2次以上了，以上了就重新开始选开始和结束
                 if (this.selectTimes.length >= 2) {
                     this.selectTimes = [];
-                    for (var i = 0; i < this.selectObj.length; i++) {
-                        this.selectObj[i].classList.remove("select_firstlast");
+                    for (var _i = 0; _i < this.selectObj.length; _i++) {
+                        this.selectObj[_i].classList.remove("select_firstlast");
                     }
                     this.selectObj = [];
                     // 清空 选中过渡
@@ -1038,6 +1025,15 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 }
                 // 清空
                 this.selectPeriod = [];
+            }
+        },
+
+        // 判断是否是ie 浏览器
+        isIEOrIE11: function isIEOrIE11() {
+            if (!!window.ActiveXobject || "ActiveXObject" in window || /Trident\/7\./.test(navigator.userAgent)) {
+                return true;
+            } else {
+                return false;
             }
         }
     };

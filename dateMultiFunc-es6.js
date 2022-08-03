@@ -155,7 +155,12 @@
         // 显示
         show() {
             if (this.dateMultiEles.date_list) {
-                this.dateMultiEles.date_list.remove();//删除
+                // 判断是否是ie
+                if (this.isIEOrIE11()) {
+                    this.dateMultiEles.date_list.removeNode(true);
+                } else {
+                    this.dateMultiEles.date_list.remove();//删除
+                }
             }
             // 塞入 时间列表
             this.createDateList();
@@ -187,11 +192,20 @@
         // 销毁
         destroy() {
             try {
-                // 删除 html
-                this.dateMultiEles.date_multi_popup.remove();
-                // 并且删除css
+                // 获取 css
                 let date_multi_func_css = document.getElementById("date_multi_func_css");
-                date_multi_func_css.remove();
+                // 判断是否是ie
+                if (this.isIEOrIE11()) {
+                    // 删除 html
+                    this.dateMultiEles.date_multi_popup.removeNode(true);
+                    // 并且删除css
+                    date_multi_func_css.removeNode(true);
+                } else {
+                    // 删除 html
+                    this.dateMultiEles.date_multi_popup.remove();
+                    // 并且删除css
+                    date_multi_func_css.remove();
+                }
 
                 // 移除事件
                 this.removeEvent();
@@ -514,7 +528,7 @@
                     if (this.options.appointTime.length) {
                         let list = [];
                         // 组装数据
-                        for (const item of this.options.appointTime) {
+                        this.options.appointTime.forEach(item => {
                             let appjson = {}
                             if (item.date) {
                                 appjson = this.getYearsDay(item.date);
@@ -529,7 +543,7 @@
                                 appjson['text'] = "";
                             }
                             list.push(appjson);
-                        }
+                        });
                         // 排序
                         list.sort((a, b) => {
                             return a.timestamp - b.timestamp;
@@ -558,14 +572,13 @@
                         // 不可选日期，只有 appointTime 没有才有效
                         let list = [];
                         // 组装数据
-                        for (const item of this.options.appointOn) {
+                        this.options.appointOn.forEach(item => {
                             let nojson = {}
                             if (item.date) {
                                 nojson = this.getYearsDay(item.date);
                             } else {
                                 nojson = this.getYearsDay(item);
                             }
-
                             if (item.text) {
                                 nojson['text'] = item.text;
                                 isModifyCss = true;
@@ -573,7 +586,7 @@
                                 nojson['text'] = "";
                             }
                             list.push(nojson);
-                        }
+                        });
                         // 排序
                         list.sort((a, b) => {
                             return a.timestamp - b.timestamp;
@@ -670,7 +683,7 @@
             let month = showTiem.getMonth() + 1; //获取当前月份(0-11,0代表1月),+1,1月就是1
             let today = showTiem.getDate(); //获取当前日(1-31)
             let currweek = showTiem.getDay(); //获取当前星期X(0-6,0代表星期天)
-            let timestamp = new Date(`${year}.${month}.${today}`).getTime();//当前时间戳(凌晨时间00:00)
+            let timestamp = new Date(`${year}/${month}/${today}`).getTime();//当前时间戳(凌晨时间00:00)
 
             // 0 代表 前一天
             let days = new Date(year, month, 0).getDate();//天数 这里 month :代表下一个月,下一个月的前一天
@@ -947,7 +960,12 @@
             // 保存时间
             _this.getYearsDay(`${year}/${month}/${today}`, true);
             // 重新生成 列表
-            _this.dateMultiEles.date_list.remove();//删除
+            // 判断是否是ie
+            if (this.isIEOrIE11()) {
+                _this.dateMultiEles.date_list.removeNode(true);
+            } else {
+                _this.dateMultiEles.date_list.remove();//删除
+            }
             _this.createDateList();
             // 修改标题
             _this.dateMultiEles.time_tit.innerHTML = year + "年" + month + "日";
@@ -965,7 +983,7 @@
                 month: month,//月
                 day: day,//日
                 time: year + this.options.backFormat + month + this.options.backFormat + day,//时间字符串
-                timestamp: new Date(`${year}.${month}.${day}`).getTime(),//时间戳
+                timestamp: new Date(`${year}/${month}/${day}`).getTime(),//时间戳
                 text: text,//文本
             }
             // 给当前添加类
@@ -987,7 +1005,18 @@
             // 多选
             if (this.options.type == 1) {
                 // 判断 数组中 是否 已经选了，选过了，就取消选中
-                let index = this.selectTimes.findIndex((v) => { return v.timestamp == timeJson.timestamp })
+                let index = -1;
+                if (this.isIEOrIE11()) {
+                    for (let i = 0; i < this.selectTimes.length; i++) {
+                        if (this.selectTimes[i].timestamp == timeJson.timestamp) {
+                            index = i;
+                            console.log(i)
+                            break;
+                        }
+                    }
+                } else {
+                    index = this.selectTimes.findIndex((v) => { return v.timestamp == timeJson.timestamp })
+                }
                 if (index >= 0) {
                     // 取消
                     this.selectObj[index].classList.remove("select_firstlast");
@@ -1159,6 +1188,14 @@
                 }
                 // 清空
                 this.selectPeriod = [];
+            }
+        },
+        // 判断是否是ie 浏览器
+        isIEOrIE11() {
+            if (!!window.ActiveXobject || "ActiveXObject" in window || (/Trident\/7\./).test(navigator.userAgent)) {
+                return true;
+            } else {
+                return false;
             }
         }
     }

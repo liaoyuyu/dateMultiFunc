@@ -147,9 +147,9 @@
     function appointDate() {
         let dateMulti = new dateMultiFunc({
             type: 0,
-            minTime: "2022.6",
+            minTime: "2022.6.1",
             maxTime: 1,
-            defaultYears: "2022.7",
+            defaultYears: "2022.7.1",
             appointTime: ["2022.6.2", "2022.7.5", "2022.7.10", "2022.7.15"],
             cancelFunc: function () {
                 console.log("取消")
@@ -166,8 +166,8 @@
     function appointDateText() {
         let dateMulti = new dateMultiFunc({
             type: 1,
-            minTime: 0,
-            maxTime: 0,
+            minTime: 1,
+            maxTime: "2022.8.10",
             appointTime: [{ date: "2022.7.1", text: "111" }, { date: "2022.7.5", text: "555" }, { date: "2022.7.8", text: "888" }, { date: "2022.7.20", text: "2020" }],
             cancelFunc: function () {
                 console.log("取消")

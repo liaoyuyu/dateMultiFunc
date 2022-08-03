@@ -8,8 +8,11 @@
 
 
 ### 2、使用说明
+<br/>
 
->引入： `<script src="./dateMultiFunc.js"></script>`
+>引入默认ES6版本： `<script src="./js/dateMultiFunc.js"></script>`
+<br/>
+>ES5版本： `<script src="./js/dateMultiFunc-es5.js"></script>`
 
 <br/>
 

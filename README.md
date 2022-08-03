@@ -74,7 +74,7 @@ isShow | 是否初始化完成就自动显示     | Boolean |   false  | true,fa
 ||||    最大最小时间范围 没 包含 默认时间，默认时间会自动设置成最小时间
 appointTime | 指定可选日期     | Array |   []  | type 0  1 有效，字符串数组 和 json数组(可带上文本)  列:["2022.7.1","2020.7.3"]  [{date:"2022.7.1"},{date:"2022.7.2"}]
 appointOn | 指定不可选日期     | Array |   []  | 同上
-minTime | 可选最小时间     | Number \| String |  ""  |  Number：表示年数，默认时间的多少年前。<br/>String：不写天数，表示当月1号
+minTime | 可选最小时间     | Number \| String |  ""  |  Number：表示年数，默认时间的多少年前。<br/>String：不写天数，表示当月1号,如：2022.7
 maxTime | 可选最大时间     | Number \| String |  ""  |  同上
 defaultYears | 默认打开显示的年月     | String \| Date |  ""  |  时间字符串 或 时间
 |||| 事件参数

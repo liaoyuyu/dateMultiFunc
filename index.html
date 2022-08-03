@@ -87,33 +87,33 @@
 </html>
 
 
-<script type="text/javascript" src="./js/dateMultiFunc.js"></script>
+<!-- <script type="text/javascript" src="./js/dateMultiFunc.js"></script> -->
 
 <!-- ie es5 版本 -->
-<!-- <script type="text/javascript" src="./js/dateMultiFunc-es5.js"></script> -->
+<script type="text/javascript" src="./js/dateMultiFunc-es5.js"></script>
 
 <!-- 类型 -->
 <script>
     // 单选
     function singleDate() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 0,
             cancelFunc: function () {
-                console.log("取消")
+                console.log("取消");
             },
             confirmFunc: function (res) {
-                console.log("确认")
-                console.log(res)
-                listCon(res, 0)
+                console.log("确认");
+                console.log(res);
+                listCon(res, 0);
             }
         });
         dateMulti.show();
-    }
+    };
 
 
     // 多选
     function multipleDate() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 1,
             cancelFunc: function () {
                 console.log("取消")
@@ -125,12 +125,12 @@
             }
         });
         dateMulti.show();
-    }
+    };
 
 
     // 时间范围
     function dateMulti() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 2,
             maxTime: 0,
             cancelFunc: function () {
@@ -143,11 +143,11 @@
             }
         });
         dateMulti.show();
-    }
+    };
 
     // 指定日期
     function appointDate() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 0,
             minTime: "2022.6.1",
             maxTime: 1,
@@ -163,10 +163,10 @@
             }
         });
         dateMulti.show();
-    }
+    };
     // 指定日期带文本
     function appointDateText() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 1,
             minTime: 1,
             maxTime: "2022.8.10",
@@ -181,10 +181,10 @@
             }
         });
         dateMulti.show();
-    }
+    };
     // 指定 不可选日期
     function appointnoDate() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 1,
             minTime: 0,
             maxTime: "2022.8.20",
@@ -200,25 +200,25 @@
             }
         });
         dateMulti.show();
-    }
+    };
 
 
 
 
     // 处理时间
     function listCon(res, type) {
-        let html = ''
+        var html = '';
         if (type == 2) {
-            html += "<p>开始时间：" + JSON.stringify(res.statrTime) + "</p>"
-            html += "<p>结束时间：" + JSON.stringify(res.endTime) + "</p>"
+            html += "<p>开始时间：" + JSON.stringify(res.statrTime) + "</p>";
+            html += "<p>结束时间：" + JSON.stringify(res.endTime) + "</p>";
         } else {
-            for (let i = 0; i < res.length; i++) {
-                html += "<p>" + JSON.stringify(res[i]) + "</p>"
+            for (var i = 0; i < res.length; i++) {
+                html += "<p>" + JSON.stringify(res[i]) + "</p>";
             }
         }
-        let list_con = document.querySelector(".list_con");
+        var list_con = document.querySelector(".list_con");
         list_con.innerHTML = html;
-    }
+    };
 </script>
 
 
@@ -226,7 +226,7 @@
 <script>
     // 顶部显示
     function topShow() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 0,
             position: "top",
             radius: [0, 0, 10, 10],
@@ -239,10 +239,10 @@
             }
         });
         dateMulti.show();
-    }
+    };
     // 中部显示
     function centerShow() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 0,
             position: "center",
             radius: 10,
@@ -255,10 +255,10 @@
             }
         });
         dateMulti.show();
-    }
+    };
     // 底部显示
     function bottomShow() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 0,
             position: "bottom",//默认
             radius: [10, 10, 0, 0],
@@ -271,7 +271,7 @@
             }
         });
         dateMulti.show();
-    }
+    };
 </script>
 
 
@@ -279,7 +279,7 @@
 <script>
     // 主题一
     function oneStyle() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 2,
             radius: [10, 10, 0, 0],
             background: "#ef8e29",
@@ -294,10 +294,10 @@
             }
         });
         dateMulti.show();
-    }
+    };
     // 主题二
     function twoStyle() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 2,
             radius: [10, 10, 0, 0],
             background: "#fe4052",
@@ -306,18 +306,18 @@
             tranColor: "#fff",
             tranBg: "#666",
             cancelFunc: function () {
-                console.log("取消")
+                console.log("取消");
             },
             confirmFunc: function (res) {
-                console.log("确认")
-                console.log(res)
+                console.log("确认");
+                console.log(res);
             }
         });
         dateMulti.show();
-    }
+    };
     // 主题三
     function threeStyle() {
-        let dateMulti = new dateMultiFunc({
+        var dateMulti = new dateMultiFunc({
             type: 2,
             radius: [10, 10, 0, 0],
             background: "#40e4fe",
@@ -326,13 +326,13 @@
             selectRadius: 8,
             tranBg: "#efd577",
             cancelFunc: function () {
-                console.log("取消")
+                console.log("取消");
             },
             confirmFunc: function (res) {
-                console.log("确认")
-                console.log(res)
+                console.log("确认");
+                console.log(res);
             }
         });
         dateMulti.show();
-    }
+    };
 </script>

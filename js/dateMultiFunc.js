@@ -228,7 +228,7 @@
                     --date_multi_func-selectColor: ${this.options.selectColor};
                     --date_multi_func-tranBg: ${this.options.tranBg};
                     --date_multi_func-tranColor: ${this.options.tranColor};
-                    --date_multi_func-selectRadius:${this.options.selectRadius};
+                    --date_multi_func-selectRadius:${this.options.selectRadius}%;
                     --date_multi_func-color:${this.options.color};
                     --date_multi_func-background:${this.options.background};
                     --date_multi_func-opacity:${this.options.opacity};
@@ -245,9 +245,22 @@
                     font-size: 13px;
                     top: 0;
                     left: 0;
+                    display: -webkit-box;
+                    display: -moz-box;
+                    display: -ms-flexbox;
                     display: flex;
+                    -webkit-box-direction: normal;
+                    -webkit-box-orient: vertical;
+                    -moz-flex-direction: column;
+                    -webkit-flex-direction: column;
                     flex-direction: column;
+                    -webkit-box-pack: end;
+                    -moz-justify-content: flex-end;
+                    -webkit-justify-content: flex-end;
                     justify-content: flex-end;
+                    -webkit-box-align: center;
+                    -moz-align-items: center;
+                    -webkit-align-items: center;
                     align-items: center;
                     transition: all 0.2s;
                     opacity: 0;
@@ -297,6 +310,7 @@
                     text-align: center;
                 }
                 .date_multi_popup .date_multi_title span{
+                    display:block;
                     height: 100%;
                     position: absolute;
                     font-size: 14px;
@@ -351,9 +365,13 @@
                     margin-bottom: 8px;
                     margin-top: 5px;
                     pointer-events: none;
+                    display: -webkit-box;
+                    display: -moz-box;
+                    display: -ms-flexbox;
                     display: flex;
                 }
                 .date_multi_popup .date_week span{
+                    display:block;
                     width: 14.28%;
                     text-align: center;
                     font-size: 13px;
@@ -365,8 +383,15 @@
                     height:calc(2.8em * 6);
                     overflow: hidden;
                     font-size: 14px;
+                    display: -webkit-box;
+                    display: -moz-box;
+                    display: -ms-flexbox;
                     display: flex;
+                    -webkit-flex-wrap: wrap;
+                    -ms-flex-wrap: wrap;
                     flex-wrap: wrap;
+                    -moz-align-content: flex-start;
+                    -webkit-align-content: flex-start;
                     align-content:flex-start;
                 }
                 .date_multi_popup .date_list div{
@@ -392,6 +417,7 @@
                 }
                 /* 文本 */
                 .date_multi_popup .date_list div span{
+                    display:block;
                     position: absolute;
                     bottom: 2px;
                     left: 0;
@@ -422,7 +448,7 @@
                     z-index: -1;
                     border-radius: ${this.options.selectRadius}%;
                     background-color: ${this.options.selectBg};
-                    border-radius: var(--date_multi_func-selectRadius)%;
+                    border-radius: var(--date_multi_func-selectRadius);
                     background-color: var(--date_multi_func-selectBg);
                 }
                 .date_multi_popup .date_list .select_firstlast{

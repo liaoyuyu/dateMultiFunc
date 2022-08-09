@@ -11,7 +11,6 @@
 <br/>
 
 >引入默认ES6版本： `<script src="./js/dateMultiFunc.js"></script>`
-<br/>
 
 >ES5版本： `<script src="./js/dateMultiFunc-es5.js"></script>`
 

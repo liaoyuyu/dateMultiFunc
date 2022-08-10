@@ -3,6 +3,9 @@
 ### 1、介绍
 移动端-js时间选择多功能插件；支持 单选，多选，时间范围，指定时间选择，不可选时间
 <!-- github 地址: [blog.gitee.com](https://blog.gitee.com)  -->
+<br/>
+
+插件地址: [https://www.jq22.com/jquery-info24398](https://www.jq22.com/jquery-info24398) 
 
 <br/>
 

@@ -10,9 +10,11 @@
 ### 2、使用说明
 <br/>
 
->引入默认ES6版本： `<script src="./js/dateMultiFunc.js"></script>`
+>引入默认ES6压缩版本： `<script src="./js/dateMultiFunc.min.js"></script>`
 
->ES5版本： `<script src="./js/dateMultiFunc-es5.js"></script>`
+>ES5压缩版本： `<script src="./js/dateMultiFunc-es5.min.js"></script>`
+
+>> 也可引入 没压缩版本，不带 min
 
 <br/>
 
@@ -100,7 +102,7 @@ confirmFunc | 确认回调     | function |  (res) => { }  |  confirmFunc: (res)
 :------ | :------
 year | 年份
 month| 月份
-day| 日
+today| 日
 time| 时间字符串，根据 backFormat 参数拼接， 如："2022.7.4"
 timestamp| 时间戳（ms）
 text| 文本

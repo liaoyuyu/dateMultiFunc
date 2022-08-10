@@ -410,8 +410,8 @@
                     width: 100%;
                     overflow: hidden;
                     text-align: center;
-                    line-height: 2.8em;
-                    height: 2.8em;
+                    line-height: inherit;
+                    height: 100%;
                     position: relative;
                     z-index: 2;
                 }
@@ -439,12 +439,12 @@
                 .date_multi_popup .date_list .select_firstlast p:before{
                     position: absolute;
                     content: "";
-                    width: 70%;
+                    width: 60%;
                     height: 0;
-                    padding-top: 70%;
+                    padding-top: 60%;
                     top: 50%;
                     transform: translateY(-50%);
-                    left: 15%;
+                    left: 20%;
                     z-index: -1;
                     border-radius: ${this.options.selectRadius}%;
                     background-color: ${this.options.selectBg};
@@ -467,7 +467,7 @@
                     content: "";
                     width: 100%;
                     height: 0;
-                    padding-top: 70%;
+                    padding-top: 60%;
                     top: 50%;
                     transform: translateY(-50%);
                     left: 0;
@@ -806,8 +806,6 @@
                         div.classList.add("on_select");
                     } else {
                         // 可选
-                        // 设置 开始选中 结束选中样式
-                        this.setFirstEndStyle(div, i);
                         // 监听点击事件
                         div.onclick = function () {
                             _this.dateClick(this)
@@ -830,7 +828,9 @@
             // 塞入
             this.dateMultiEles.date_multi_con.appendChild(date_list);
             this.dateMultiEles['date_list'] = date_list;//保存
-            // 设置选择过渡样式
+            // 设置 选中样式
+            this.setSelectStyle();
+            // 设置选择过渡样式(type==2有效)
             this.setSectionStyle();
         },
         // 获取 不可选日期
@@ -1003,13 +1003,13 @@
 
             //当前年月
             let { year, month } = this.currYears;
-            let day = Number(p.innerText);
+            let today = Number(p.innerText);
             let timeJson = {
                 year: year,//年
                 month: month,//月
-                day: day,//日
-                time: year + this.options.backFormat + month + this.options.backFormat + day,//时间字符串
-                timestamp: new Date(`${year}/${month}/${day}`).getTime(),//时间戳
+                today: today,//日
+                time: year + this.options.backFormat + month + this.options.backFormat + today,//时间字符串
+                timestamp: new Date(`${year}/${month}/${today}`).getTime(),//时间戳
                 text: text,//文本
             }
             // 给当前添加类
@@ -1108,35 +1108,50 @@
             // 设置选中区间的过渡样式
             this.setSectionStyle();
         },
-        // 重新设置 开始选中 结束选中样式
-        setFirstEndStyle(div, i) {
-            if (!(this.selectTimes.length >= 2) || !this.selectObj.length) return;
-            // 判断 当前年月 是否是 选择元素的年月,并且索引对应
-            //当前年月
-            let { year, month } = this.currYears;
-            let index = "";
-            if (year == this.selectTimes[0].year && month == this.selectTimes[0].month) {
-                // 开始
-                index = Number(this.selectObj[0].getAttribute("index"))
-                if (i == index) {
-                    div.classList.add("select_firstlast");
-                    // 重新 赋值
-                    this.selectObj[0] = div;
+        // 重新设置 选中样式
+        setSelectStyle() {
+            // 必须有长度
+            if (!this.selectTimes.length || !this.selectObj.length) return;
+
+            let { year, month } = this.currYears;//当前年月日
+
+            // 筛选出 当前 年月的 选中日期
+            let currSelectTimes = [];
+            this.selectTimes.forEach((v, index) => {
+                if (v.year == year && v.month == month) {
+                    // 记录 索引，对应 选中元素索引，后面好替换
+                    v["selectObjIndex"] = index;
+                    currSelectTimes.push(v)
                 }
-            }
-            if (year == this.selectTimes[1].year && month == this.selectTimes[1].month) {
-                // 结束
-                index = Number(this.selectObj[1].getAttribute("index"))
-                if (i == index) {
-                    div.classList.add("select_firstlast");
-                    // 重新 赋值
-                    this.selectObj[1] = div;
+            });
+            // 当前年月没有选中就阻止进入
+            if (!currSelectTimes.length) return;
+
+            // 元素列表，因为是重新生成的，所有要重新赋值和保存
+            let list = this.dateMultiEles.date_list.children;
+
+            let num = 0;//记录 替换次数，完成了，就跳出循环，提高性能
+            for (let i = 0; i < list.length; i++) {
+                let today = list[i].getElementsByTagName("p")[0].innerText;
+                today = today ? Number(today) : "";
+                // 获取 对应元素
+                let obj = currSelectTimes.filter(v => (today > 0 && v.today == today))[0];
+                if (obj) {
+                    // 当前元素添加类
+                    list[i].classList.add("select_firstlast");
+                    // 替换老数据,根据上面保存得索引，修改对应元素
+                    this.selectObj[obj.selectObjIndex] = list[i];
+                    // 记录次数,性能优化
+                    num++;
                 }
+                // 判断，替换完成，就跳出循环
+                if (num >= currSelectTimes.length) return;
             }
         },
         // 设置选中区间的过渡样式
         setSectionStyle() {
             this.selectPeriod = [];//清空
+            if (this.options.type !== 2) return;
 
             // 判断是否 选中了时间
             if (!(this.selectTimes.length >= 2)) return;

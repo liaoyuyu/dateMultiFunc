@@ -7,7 +7,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 // 时间 选择 插件  ,不支持 ie
-; (function (win, undefined) {
+;(function (win, undefined) {
     var _this = null;
     // 方法主体，不暴露
     var dateMultiFunc = function dateMultiFunc(options) {
@@ -28,9 +28,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             title: "选择时间", //标题
             isCancel: true, //是否显示取消按钮
             cancelText: "取消", //取消按钮文案
-            cancelFunc: function cancelFunc() { }, //取消回调
+            cancelFunc: function cancelFunc() {}, //取消回调
             confirmText: "确认", //确认按钮文案
-            confirmFunc: function confirmFunc() { }, //确认回调
+            confirmFunc: function confirmFunc() {}, //确认回调
             backFormat: ".", //返回格式(默认 . 分割)
             isShow: false, //是否立即显示
 
@@ -42,8 +42,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             // 最小时间 必须 比 最大时间 小 ,如果 默认打开时间 没在 区间中，默认时间设置成最小时间
             minTime: "", // 可选最小时间（同默认时间格式）（可数字或时间字符串）
             maxTime: "", // 可选最大时间（同默认时间格式）可数字或时间字符串）
-            defaultYears: ""
-        }, options);
+            defaultYears: "" }, options);
 
         // 内部参数
         this.currYears = {}; //当前显示的年月
@@ -146,7 +145,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 // date_list,//日期列表
 
                 // 合并
-            }; this.dateMultiEles = _extends(this.dateMultiEles, dateMultiEles);
+            };this.dateMultiEles = _extends(this.dateMultiEles, dateMultiEles);
 
             // 生成 css
             this.createdCss();
@@ -223,7 +222,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 this.removeEvent();
 
                 dateFuncObj = null;
-            } catch (err) { }
+            } catch (err) {}
         },
 
         // 修改 css 选中圆角
@@ -236,7 +235,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
         // 生成 css 样式
         createdCss: function createdCss() {
-            var css = "\n                :root {\n                    --date_multi_func-selectBg: " + this.options.selectBg + ";\n                    --date_multi_func-selectColor: " + this.options.selectColor + ";\n                    --date_multi_func-tranBg: " + this.options.tranBg + ";\n                    --date_multi_func-tranColor: " + this.options.tranColor + ";\n                    --date_multi_func-selectRadius:" + this.options.selectRadius + "%;\n                    --date_multi_func-color:" + this.options.color + ";\n                    --date_multi_func-background:" + this.options.background + ";\n                    --date_multi_func-opacity:" + this.options.opacity + ";\n                }\n                .date_multi_popup,.date_multi_popup *{\n                    margin: 0;\n                    padding: 0;\n                }\n                .date_multi_popup{\n                    position: fixed;\n                    z-index: 2000;\n                    width: 100%;\n                    height: 100%;\n                    font-size: 13px;\n                    top: 0;\n                    left: 0;\n                    display: -webkit-box;\n                    display: -moz-box;\n                    display: -ms-flexbox;\n                    display: flex;\n                    -webkit-box-direction: normal;\n                    -webkit-box-orient: vertical;\n                    -moz-flex-direction: column;\n                    -webkit-flex-direction: column;\n                    flex-direction: column;\n                    -webkit-box-pack: end;\n                    -moz-justify-content: flex-end;\n                    -webkit-justify-content: flex-end;\n                    justify-content: flex-end;\n                    -webkit-box-align: center;\n                    -moz-align-items: center;\n                    -webkit-align-items: center;\n                    align-items: center;\n                    transition: all 0.2s;\n                    opacity: 0;\n                    visibility: hidden;\n                    color: " + this.options.color + ";\n                    color: var(--date_multi_func-color);\n                }\n                .date_multi_show{\n                    opacity: 1;\n                    visibility: visible;\n                }\n                .date_multi_popup .date_multi_bg{\n                    position: absolute;\n                    z-index: 1;\n                    top: 0;\n                    left: 0;\n                    width: 100%;\n                    height: 100%;\n                    background: #000;\n                    opacity: " + this.options.opacity + ";\n                    opacity: var(--date_multi_func-opacity);\n                }\n                .date_multi_popup .date_multi_inner{\n                    position: relative;\n                    z-index: 5;\n                    width: 100%;\n                    min-height: 20%;\n                    padding-top: 6px;\n                    box-shadow: 0px 0px 3px -1px #999;\n                    transition: all 0.3s 0.2s;\n                    transform: translateY(100%);\n                    opacity: 0;\n                    background-color: " + this.options.background + ";\n                    background-color: var(--date_multi_func-background);\n                }\n                .date_multi_show .date_multi_inner{\n                    transform: translateY(0);\n                    opacity: 1;\n                }\n                .date_multi_popup .date_multi_title{\n                    width: 100%;\n                    position: relative;\n                    line-height: 2.4;\n                }\n                .date_multi_popup .date_multi_title p{\n                    font-size: 16px;\n                    text-align: center;\n                }\n                .date_multi_popup .date_multi_title span{\n                    display:block;\n                    height: 100%;\n                    position: absolute;\n                    font-size: 14px;\n                    left: 0;\n                    top: 0;\n                    padding: 0 20px;\n                }\n                .date_multi_popup .date_multi_title span:last-child{\n                    left: auto;\n                    right: 0;\n                }\n                .date_multi_popup .date_multi_time{\n                    line-height: 2.4;\n                }\n                .date_multi_popup .date_multi_time p{\n                    font-weight: bold;\n                }\n                .date_multi_popup .date_multi_time span{\n                    padding: 0 15%;\n                }\n                .date_multi_popup .date_multi_time span::after{\n                    position: absolute;\n                    content: \"\";\n                    display: block;\n                    width: 0;\n                    height: 0;\n                    border-left: 6px solid transparent;\n                    border-top: 4px solid transparent;\n                    border-bottom: 4px solid transparent;\n                    left: 50%;\n                    margin-left: -4px;\n                    top: 50%;\n                    margin-top: -6px;\n                    border-right: 6px solid " + this.options.color + ";\n                    border-right: 6px solid var(--date_multi_func-color);\n                }\n                .date_multi_popup .date_multi_time span:last-child::after{\n                    border-right: 6px solid transparent;\n                    border-left: 6px solid " + this.options.color + ";\n                    border-left: 6px solid var(--date_multi_func-color);\n                }\n                \n                .date_multi_popup .date_multi_con{\n                    width: 100%;\n                    padding: 0 10px 15px 10px;\n                    box-sizing: border-box;\n                }\n                /* \u661F\u671F */\n                .date_multi_popup .date_week{\n                    width: 100%;\n                    overflow: hidden;\n                    margin-bottom: 8px;\n                    margin-top: 5px;\n                    pointer-events: none;\n                    display: -webkit-box;\n                    display: -moz-box;\n                    display: -ms-flexbox;\n                    display: flex;\n                }\n                .date_multi_popup .date_week span{\n                    display:block;\n                    width: 14.28%;\n                    text-align: center;\n                    font-size: 13px;\n                    line-height: 2.1;\n                }\n                /* \u65E5\u671F */\n                .date_multi_popup .date_list{\n                    width: 100%;\n                    height:calc(2.8em * 6);\n                    overflow: hidden;\n                    font-size: 14px;\n                    display: -webkit-box;\n                    display: -moz-box;\n                    display: -ms-flexbox;\n                    display: flex;\n                    -webkit-flex-wrap: wrap;\n                    -ms-flex-wrap: wrap;\n                    flex-wrap: wrap;\n                    -moz-align-content: flex-start;\n                    -webkit-align-content: flex-start;\n                    align-content:flex-start;\n                }\n                .date_multi_popup .date_list div{\n                    display: block;\n                    width: 14.28%;\n                    overflow: hidden;\n                    text-align: center;\n                    line-height: 2.8em;\n                    height: 2.8em;\n                    position: relative;\n                    z-index: 2;\n                    transition: all 0.1s;\n                }\n                .date_multi_popup .date_list p{\n                    display: block;\n                    width: 100%;\n                    overflow: hidden;\n                    text-align: center;\n                    line-height: 2.8em;\n                    height: 2.8em;\n                    position: relative;\n                    z-index: 2;\n                }\n                /* \u6587\u672C */\n                .date_multi_popup .date_list div span{\n                    display:block;\n                    position: absolute;\n                    bottom: 2px;\n                    left: 0;\n                    width: 100%;\n                    text-align: center;\n                    font-size: 12px;\n                    line-height: 1;\n                    z-index: 3;\n                    transform: scale(0.7);\n                }\n                /* \u4E0D\u53EF\u9009\u6837\u5F0F */\n                .date_multi_popup .date_list div.on_select{\n                    opacity: 0.3;\n                    pointer-events: none;\n                }\n                \n                /* \u9009\u4E2D\u6837\u5F0F */\n                /* \u7B2C\u4E00\u4E2A\u548C\u6700\u540E\u4E00\u4E2A \u5706\u6837\u5F0F*/\n                .date_multi_popup .date_list .select_firstlast p:before{\n                    position: absolute;\n                    content: \"\";\n                    width: 70%;\n                    height: 0;\n                    padding-top: 70%;\n                    top: 50%;\n                    transform: translateY(-50%);\n                    left: 15%;\n                    z-index: -1;\n                    border-radius: " + this.options.selectRadius + "%;\n                    background-color: " + this.options.selectBg + ";\n                    border-radius: var(--date_multi_func-selectRadius);\n                    background-color: var(--date_multi_func-selectBg);\n                }\n                .date_multi_popup .date_list .select_firstlast{\n                    color: " + this.options.selectColor + ";\n                    color: var(--date_multi_func-selectColor);\n                }\n                /* \u8303\u56F4\u95F4\u6837\u5F0F */\n                .date_multi_popup .date_list .select_period{\n                    color: " + this.options.tranColor + ";\n                    color: var(--date_multi_func-tranColor);\n                }\n                .date_multi_popup .date_list .select_period p::after,\n                .date_multi_popup .date_list .select_firstlast p::after\n                {\n                    position: absolute;\n                    content: \"\";\n                    width: 100%;\n                    height: 0;\n                    padding-top: 70%;\n                    top: 50%;\n                    transform: translateY(-50%);\n                    left: 0;\n                    z-index: -2;\n                    background-color: " + this.options.tranBg + ";\n                    background-color: var(--date_multi_func-tranBg);\n                }\n                .date_multi_popup .date_list .select_firstlast p::after{\n                    width: 50%;\n                    opacity: 0;\n                }\n                /* \u95ED\u5408\u6837\u5F0F */\n                .date_multi_popup .date_list .select_first p::after,\n                .date_multi_popup .date_list .select_last p::after{\n                    opacity: 1;\n                }\n                .date_multi_popup .date_list .select_first p::after{\n                    right:0;\n                    left:auto;\n                }\n            ";
+            var css = "\n                :root {\n                    --date_multi_func-selectBg: " + this.options.selectBg + ";\n                    --date_multi_func-selectColor: " + this.options.selectColor + ";\n                    --date_multi_func-tranBg: " + this.options.tranBg + ";\n                    --date_multi_func-tranColor: " + this.options.tranColor + ";\n                    --date_multi_func-selectRadius:" + this.options.selectRadius + "%;\n                    --date_multi_func-color:" + this.options.color + ";\n                    --date_multi_func-background:" + this.options.background + ";\n                    --date_multi_func-opacity:" + this.options.opacity + ";\n                }\n                .date_multi_popup,.date_multi_popup *{\n                    margin: 0;\n                    padding: 0;\n                }\n                .date_multi_popup{\n                    position: fixed;\n                    z-index: 2000;\n                    width: 100%;\n                    height: 100%;\n                    font-size: 13px;\n                    top: 0;\n                    left: 0;\n                    display: -webkit-box;\n                    display: -moz-box;\n                    display: -ms-flexbox;\n                    display: flex;\n                    -webkit-box-direction: normal;\n                    -webkit-box-orient: vertical;\n                    -moz-flex-direction: column;\n                    -webkit-flex-direction: column;\n                    flex-direction: column;\n                    -webkit-box-pack: end;\n                    -moz-justify-content: flex-end;\n                    -webkit-justify-content: flex-end;\n                    justify-content: flex-end;\n                    -webkit-box-align: center;\n                    -moz-align-items: center;\n                    -webkit-align-items: center;\n                    align-items: center;\n                    transition: all 0.2s;\n                    opacity: 0;\n                    visibility: hidden;\n                    color: " + this.options.color + ";\n                    color: var(--date_multi_func-color);\n                }\n                .date_multi_show{\n                    opacity: 1;\n                    visibility: visible;\n                }\n                .date_multi_popup .date_multi_bg{\n                    position: absolute;\n                    z-index: 1;\n                    top: 0;\n                    left: 0;\n                    width: 100%;\n                    height: 100%;\n                    background: #000;\n                    opacity: " + this.options.opacity + ";\n                    opacity: var(--date_multi_func-opacity);\n                }\n                .date_multi_popup .date_multi_inner{\n                    position: relative;\n                    z-index: 5;\n                    width: 100%;\n                    min-height: 20%;\n                    padding-top: 6px;\n                    box-shadow: 0px 0px 3px -1px #999;\n                    transition: all 0.3s 0.2s;\n                    transform: translateY(100%);\n                    opacity: 0;\n                    background-color: " + this.options.background + ";\n                    background-color: var(--date_multi_func-background);\n                }\n                .date_multi_show .date_multi_inner{\n                    transform: translateY(0);\n                    opacity: 1;\n                }\n                .date_multi_popup .date_multi_title{\n                    width: 100%;\n                    position: relative;\n                    line-height: 2.4;\n                }\n                .date_multi_popup .date_multi_title p{\n                    font-size: 16px;\n                    text-align: center;\n                }\n                .date_multi_popup .date_multi_title span{\n                    display:block;\n                    height: 100%;\n                    position: absolute;\n                    font-size: 14px;\n                    left: 0;\n                    top: 0;\n                    padding: 0 20px;\n                }\n                .date_multi_popup .date_multi_title span:last-child{\n                    left: auto;\n                    right: 0;\n                }\n                .date_multi_popup .date_multi_time{\n                    line-height: 2.4;\n                }\n                .date_multi_popup .date_multi_time p{\n                    font-weight: bold;\n                }\n                .date_multi_popup .date_multi_time span{\n                    padding: 0 15%;\n                }\n                .date_multi_popup .date_multi_time span::after{\n                    position: absolute;\n                    content: \"\";\n                    display: block;\n                    width: 0;\n                    height: 0;\n                    border-left: 6px solid transparent;\n                    border-top: 4px solid transparent;\n                    border-bottom: 4px solid transparent;\n                    left: 50%;\n                    margin-left: -4px;\n                    top: 50%;\n                    margin-top: -6px;\n                    border-right: 6px solid " + this.options.color + ";\n                    border-right: 6px solid var(--date_multi_func-color);\n                }\n                .date_multi_popup .date_multi_time span:last-child::after{\n                    border-right: 6px solid transparent;\n                    border-left: 6px solid " + this.options.color + ";\n                    border-left: 6px solid var(--date_multi_func-color);\n                }\n                \n                .date_multi_popup .date_multi_con{\n                    width: 100%;\n                    padding: 0 10px 15px 10px;\n                    box-sizing: border-box;\n                }\n                /* \u661F\u671F */\n                .date_multi_popup .date_week{\n                    width: 100%;\n                    overflow: hidden;\n                    margin-bottom: 8px;\n                    margin-top: 5px;\n                    pointer-events: none;\n                    display: -webkit-box;\n                    display: -moz-box;\n                    display: -ms-flexbox;\n                    display: flex;\n                }\n                .date_multi_popup .date_week span{\n                    display:block;\n                    width: 14.28%;\n                    text-align: center;\n                    font-size: 13px;\n                    line-height: 2.1;\n                }\n                /* \u65E5\u671F */\n                .date_multi_popup .date_list{\n                    width: 100%;\n                    height:calc(2.8em * 6);\n                    overflow: hidden;\n                    font-size: 14px;\n                    display: -webkit-box;\n                    display: -moz-box;\n                    display: -ms-flexbox;\n                    display: flex;\n                    -webkit-flex-wrap: wrap;\n                    -ms-flex-wrap: wrap;\n                    flex-wrap: wrap;\n                    -moz-align-content: flex-start;\n                    -webkit-align-content: flex-start;\n                    align-content:flex-start;\n                }\n                .date_multi_popup .date_list div{\n                    display: block;\n                    width: 14.28%;\n                    overflow: hidden;\n                    text-align: center;\n                    line-height: 2.8em;\n                    height: 2.8em;\n                    position: relative;\n                    z-index: 2;\n                    transition: all 0.1s;\n                }\n                .date_multi_popup .date_list p{\n                    display: block;\n                    width: 100%;\n                    overflow: hidden;\n                    text-align: center;\n                    line-height: inherit;\n                    height: 100%;\n                    position: relative;\n                    z-index: 2;\n                }\n                /* \u6587\u672C */\n                .date_multi_popup .date_list div span{\n                    display:block;\n                    position: absolute;\n                    bottom: 2px;\n                    left: 0;\n                    width: 100%;\n                    text-align: center;\n                    font-size: 12px;\n                    line-height: 1;\n                    z-index: 3;\n                    transform: scale(0.7);\n                }\n                /* \u4E0D\u53EF\u9009\u6837\u5F0F */\n                .date_multi_popup .date_list div.on_select{\n                    opacity: 0.3;\n                    pointer-events: none;\n                }\n                \n                /* \u9009\u4E2D\u6837\u5F0F */\n                /* \u7B2C\u4E00\u4E2A\u548C\u6700\u540E\u4E00\u4E2A \u5706\u6837\u5F0F*/\n                .date_multi_popup .date_list .select_firstlast p:before{\n                    position: absolute;\n                    content: \"\";\n                    width: 60%;\n                    height: 0;\n                    padding-top: 60%;\n                    top: 50%;\n                    transform: translateY(-50%);\n                    left: 20%;\n                    z-index: -1;\n                    border-radius: " + this.options.selectRadius + "%;\n                    background-color: " + this.options.selectBg + ";\n                    border-radius: var(--date_multi_func-selectRadius);\n                    background-color: var(--date_multi_func-selectBg);\n                }\n                .date_multi_popup .date_list .select_firstlast{\n                    color: " + this.options.selectColor + ";\n                    color: var(--date_multi_func-selectColor);\n                }\n                /* \u8303\u56F4\u95F4\u6837\u5F0F */\n                .date_multi_popup .date_list .select_period{\n                    color: " + this.options.tranColor + ";\n                    color: var(--date_multi_func-tranColor);\n                }\n                .date_multi_popup .date_list .select_period p::after,\n                .date_multi_popup .date_list .select_firstlast p::after\n                {\n                    position: absolute;\n                    content: \"\";\n                    width: 100%;\n                    height: 0;\n                    padding-top: 60%;\n                    top: 50%;\n                    transform: translateY(-50%);\n                    left: 0;\n                    z-index: -2;\n                    background-color: " + this.options.tranBg + ";\n                    background-color: var(--date_multi_func-tranBg);\n                }\n                .date_multi_popup .date_list .select_firstlast p::after{\n                    width: 50%;\n                    opacity: 0;\n                }\n                /* \u95ED\u5408\u6837\u5F0F */\n                .date_multi_popup .date_list .select_first p::after,\n                .date_multi_popup .date_list .select_last p::after{\n                    opacity: 1;\n                }\n                .date_multi_popup .date_list .select_first p::after{\n                    right:0;\n                    left:auto;\n                }\n            ";
 
             // 设置 参数样式
             var optionsCss = "\n                /* \u5706\u89D2 \u6570\u7EC4\u5C31\u7528\u6570\u7EC4\u5706\u89D2  \u4E0D\u662F\u6570\u7EC4\u5C31\u7528 \u4E0A\u9762\u5706\u89D2*/\n                .date_multi_popup .date_multi_inner{\n                    border-radius:" + (this.options.radius.length ? this.options.radius.join("px ") + "px" : this.options.radius + "px") + ";\n                }\n                /* \u4F4D\u7F6E*/\n                .date_multi_popup{\n                    " + (this.options.position == "top" ? "justify-content: flex-start" : this.options.position == "center" ? "justify-content: center" : '') + "\n                }\n                .date_multi_popup .date_multi_inner{\n                    transform: translateY(" + (this.options.position == "top" ? "-100%" : this.options.position == "center" ? '50%' : '100%') + ");\n                }\n                .date_multi_show .date_multi_inner{\n                    transform: translateY(0);\n                }\n            ";
@@ -357,7 +356,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                         this.modifyCssRadius();
                     }
                 }
-            } catch (err) { }
+            } catch (err) {}
             // 保存
             this.minTimeJson = minTimeJson;
             this.maxTimeJson = maxTimeJson;
@@ -504,8 +503,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
         // 生成 时间列表
         createDateList: function createDateList() {
-            var _this4 = this;
-
             var date_list = document.createElement("div");
             date_list.className = "date_list";
 
@@ -560,8 +557,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                             div.classList.add("on_select");
                         } else {
                             // 可选
-                            // 设置 开始选中 结束选中样式
-                            _this4.setFirstEndStyle(div, i);
                             // 监听点击事件
                             div.onclick = function () {
                                 _this.dateClick(this);
@@ -587,7 +582,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             // 塞入
             this.dateMultiEles.date_multi_con.appendChild(date_list);
             this.dateMultiEles['date_list'] = date_list; //保存
-            // 设置选择过渡样式
+            // 设置 选中样式
+            this.setSelectStyle();
+            // 设置选择过渡样式(type==2有效)
             this.setSectionStyle();
         },
 
@@ -802,17 +799,17 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 year = _currYears3.year,
                 month = _currYears3.month;
 
-            var day = Number(p.innerText);
+            var today = Number(p.innerText);
             var timeJson = {
                 year: year, //年
                 month: month, //月
-                day: day, //日
-                time: year + this.options.backFormat + month + this.options.backFormat + day, //时间字符串
-                timestamp: new Date(year + "/" + month + "/" + day).getTime(), //时间戳
+                today: today, //日
+                time: year + this.options.backFormat + month + this.options.backFormat + today, //时间字符串
+                timestamp: new Date(year + "/" + month + "/" + today).getTime(), //时间戳
                 text: text //文本
 
                 // 给当前添加类
-            }; e.classList.add("select_firstlast");
+            };e.classList.add("select_firstlast");
 
             // 单选
             if (this.options.type == 0) {
@@ -910,39 +907,67 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             this.setSectionStyle();
         },
 
-        // 重新设置 开始选中 结束选中样式
-        setFirstEndStyle: function setFirstEndStyle(div, i) {
-            if (!(this.selectTimes.length >= 2) || !this.selectObj.length) return;
-            // 判断 当前年月 是否是 选择元素的年月,并且索引对应
-            //当前年月
+        // 重新设置 选中样式
+        setSelectStyle: function setSelectStyle() {
+            var _this4 = this;
+
+            // 必须有长度
+            if (!this.selectTimes.length || !this.selectObj.length) return;
+
             var _currYears4 = this.currYears,
                 year = _currYears4.year,
-                month = _currYears4.month;
+                month = _currYears4.month; //当前年月日
 
-            var index = "";
-            if (year == this.selectTimes[0].year && month == this.selectTimes[0].month) {
-                // 开始
-                index = Number(this.selectObj[0].getAttribute("index"));
-                if (i == index) {
-                    div.classList.add("select_firstlast");
-                    // 重新 赋值
-                    this.selectObj[0] = div;
+            // 筛选出 当前 年月的 选中日期
+
+            var currSelectTimes = [];
+            this.selectTimes.forEach(function (v, index) {
+                if (v.year == year && v.month == month) {
+                    // 记录 索引，对应 选中元素索引，后面好替换
+                    v["selectObjIndex"] = index;
+                    currSelectTimes.push(v);
                 }
-            }
-            if (year == this.selectTimes[1].year && month == this.selectTimes[1].month) {
-                // 结束
-                index = Number(this.selectObj[1].getAttribute("index"));
-                if (i == index) {
-                    div.classList.add("select_firstlast");
-                    // 重新 赋值
-                    this.selectObj[1] = div;
+            });
+            // 当前年月没有选中就阻止进入
+            if (!currSelectTimes.length) return;
+
+            // 元素列表，因为是重新生成的，所有要重新赋值和保存
+            var list = this.dateMultiEles.date_list.children;
+
+            var num = 0; //记录 替换次数，完成了，就跳出循环，提高性能
+
+            var _loop4 = function _loop4(i) {
+                var today = list[i].getElementsByTagName("p")[0].innerText;
+                today = today ? Number(today) : "";
+                // 获取 对应元素
+                var obj = currSelectTimes.filter(function (v) {
+                    return today > 0 && v.today == today;
+                })[0];
+                if (obj) {
+                    // 当前元素添加类
+                    list[i].classList.add("select_firstlast");
+                    // 替换老数据,根据上面保存得索引，修改对应元素
+                    _this4.selectObj[obj.selectObjIndex] = list[i];
+                    // 记录次数,性能优化
+                    num++;
                 }
+                // 判断，替换完成，就跳出循环
+                if (num >= currSelectTimes.length) return {
+                        v: void 0
+                    };
+            };
+
+            for (var i = 0; i < list.length; i++) {
+                var _ret5 = _loop4(i);
+
+                if ((typeof _ret5 === "undefined" ? "undefined" : _typeof(_ret5)) === "object") return _ret5.v;
             }
         },
 
         // 设置选中区间的过渡样式
         setSectionStyle: function setSectionStyle() {
             this.selectPeriod = []; //清空
+            if (this.options.type !== 2) return;
 
             // 判断是否 选中了时间
             if (!(this.selectTimes.length >= 2)) return;

@@ -3,7 +3,7 @@
 ### 1、介绍
 移动端-js时间选择多功能插件；支持 单选，多选，时间范围，指定时间选择，不可选时间
 
-github 地址: [https://github.com/liaoyuyu/dateMultiFunc](https://github.com/liaoyuyu/dateMultiFunc) 
+<!-- github 地址: [https://github.com/liaoyuyu/dateMultiFunc](https://github.com/liaoyuyu/dateMultiFunc)  -->
 <br/>
 
 插件演示地址: [https://www.jq22.com/jquery-info24398](https://www.jq22.com/jquery-info24398) 
